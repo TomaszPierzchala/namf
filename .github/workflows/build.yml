@@ -44,10 +44,10 @@ jobs:
     # Budowanie wszystkich wariantów
     - name: Build firmware variants
       run: |
-        mkdir -p builds/esp8266 builds/esp32
+        mkdir -p builds/esp8266
         
         # ESP8266 builds
-        for lang in pl en hu ro; do
+        for lang in pl en; do
           echo "Building ESP8266 $lang variant..."
           pio run -e "lang_$lang"
           
@@ -63,21 +63,6 @@ jobs:
             cp .pio/build/lang_$lang/firmware.bin builds/esp8266/firmware-esp8266-$lang-alfa.bin
           fi
         done
-        
-        # ESP32 build
-        echo "Building ESP32 variant..."
-        pio run -e lang_en_32
-        
-        if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-          # Release build
-          cp .pio/build/lang_en_32/firmware.bin builds/esp32/firmware-esp32-en.bin
-        elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
-          # Beta build
-          cp .pio/build/lang_en_32/firmware.bin builds/esp32/firmware-esp32-en-beta.bin
-        else
-          # Alfa build
-          cp .pio/build/lang_en_32/firmware.bin builds/esp32/firmware-esp32-en-alfa.bin
-        fi
 
     # Publikowanie alfa/beta buildów
     - name: Upload development builds
@@ -104,7 +89,6 @@ jobs:
       with:
         files: |
           builds/esp8266/firmware-esp8266-*.bin
-          builds/esp32/firmware-esp32-*.bin
         draft: false
         prerelease: false
       env:
