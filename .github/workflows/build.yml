@@ -2,11 +2,11 @@ name: Build Firmware
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
     tags:
       - 'v*'
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build:
@@ -81,7 +81,7 @@ jobs:
 
     # Publikowanie alfa/beta buildów
     - name: Upload development builds
-      if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
+      if: github.ref == 'refs/heads/master' || github.event_name == 'pull_request'
       uses: actions/upload-artifact@v3
       with:
         name: firmware-builds
@@ -89,7 +89,7 @@ jobs:
         
     # Commit alfa/beta buildów do repozytorium
     - name: Commit development builds
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/master'
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
@@ -115,6 +115,6 @@ jobs:
 # 2. Umieść ten plik jako build.yml w tym katalogu
 # 3. Upewnij się, że masz odpowiednie uprawnienia do repo
 # 4. Workflow uruchomi się automatycznie przy:
-#    - Push do main (tworzy wersje alfa)
-#    - Pull Request do main (tworzy wersje beta)
+#    - Push do master (tworzy wersje alfa)
+#    - Pull Request do master (tworzy wersje beta)
 #    - Push taga zaczynającego się od 'v' (tworzy release)
