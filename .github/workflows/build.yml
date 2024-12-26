@@ -64,13 +64,13 @@ jobs:
           fi
         done
 
-    # # Publikowanie alfa/beta buildów
-    # - name: Upload development builds
-    #   if: github.ref == 'refs/heads/master' || github.event_name == 'pull_request'
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: firmware-builds
-    #     path: builds/
+    # Publikowanie alfa/beta buildów
+    - name: Upload development builds
+      if: github.ref == 'refs/heads/master' || github.event_name == 'pull_request'
+      uses: actions/upload-artifact@v4
+      with:
+        name: firmware-builds
+        path: builds/
         
     # Commit alfa/beta buildów do repozytorium
     - name: Commit development builds
