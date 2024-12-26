@@ -89,7 +89,7 @@ jobs:
 
     # Tworzenie release dla tagów
     - name: Create Release
-      if: startsWith(github.ref, 'refs/tags/last')
+      if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
         files: |
