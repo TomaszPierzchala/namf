@@ -57,19 +57,19 @@ extern String tmpl(const String& patt, const String& value);
 #define URL_FSAPP "/data.php"
 #define PORT_FSAPP 80
 
-#define UPDATE_HOST F("github.com")
+#define UPDATE_HOST F("fw.nettigo.pl")
 #ifdef ARDUINO_ARCH_ESP8266
-#define UPDATE_URL F("/TomaszPierzchala/namf/releases/last/firmware-esp8266-" INTL_LANG ".bin")
-#define UPDATE_URL_ALFA F("/TomaszPierzchala/namf/main/builds/esp8266/firmware-esp8266-" INTL_LANG "-alfa.bin")
-#define UPDATE_URL_BETA F("/TomaszPierzchala/namf/main/builds/esp8266/firmware-esp8266-" INTL_LANG "-beta.bin")
+#define UPDATE_URL F("/NAMF/index.php")
+#define UPDATE_URL_ALFA F("/NAMF/index.php")
+#define UPDATE_URL_BETA F("/NAMF/index.php")
 #elif defined(ARDUINO_ARCH_ESP32)
-#define UPDATE_URL F("/TomaszPierzchala/namf/releases/latest/download/firmware-esp32-" INTL_LANG ".bin")
-#define UPDATE_URL_ALFA F("/TomaszPierzchala/namf/main/builds/esp32/firmware-esp32-" INTL_LANG "-alfa.bin")
-#define UPDATE_URL_BETA F("/TomaszPierzchala/namf/main/builds/esp32/firmware-esp32-" INTL_LANG "-beta.bin")
+#define UPDATE_URL F("/NAMF32/index.php")
+#define UPDATE_URL_ALFA F("/NAMF32/index.php")
+#define UPDATE_URL_BETA F("/NAMF32/index.php")
 #endif
-#define UPDATE_HOST_ALFA F("raw.githubusercontent.com")
-#define UPDATE_HOST_BETA F("raw.githubusercontent.com")
-#define UPDATE_PORT 443
+#define UPDATE_HOST_ALFA F("alfa.fw.nettigo.pl")
+#define UPDATE_HOST_BETA F("beta.fw.nettigo.pl")
+#define UPDATE_PORT 80
 
 #define JSON_BUFFER_SIZE 2600
 
