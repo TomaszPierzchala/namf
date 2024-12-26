@@ -82,10 +82,10 @@ jobs:
         git commit -m "Update development builds" || echo "No changes to commit"
         git push
         
-    - name: Create or Update Tag
-      run: |
-        git tag -f last
-        git push origin last --force
+    # - name: Create or Update Tag
+    #   run: |
+    #     git tag -f last
+    #     git push origin last --force
 
     # Tworzenie release dla tagów
     - name: Create Release
