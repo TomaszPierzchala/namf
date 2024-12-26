@@ -3,8 +3,8 @@ name: Build Firmware
 on:
   push:
     branches: [ master ]
-    tags:
-      - 'v*'
+    # tags:
+    #   - 'v*'
   pull_request:
     branches: [ master ]
 
@@ -82,14 +82,14 @@ jobs:
         git commit -m "Update development builds" || echo "No changes to commit"
         git push
         
-    # - name: Create or Update Tag
-    #   run: |
-    #     git tag -f last
-    #     git push origin last --force
+    - name: Create or Update Tag
+      run: |
+        git tag -f last
+#        git push origin last --force
 
     # Tworzenie release dla tagów
     - name: Create Release
-      if: startsWith(github.ref, 'refs/tags/')
+#      if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
         files: |
