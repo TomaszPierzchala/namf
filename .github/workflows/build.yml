@@ -85,7 +85,7 @@ jobs:
     - name: Create or Update Tag
       run: |
         git tag -f last
-#        git push origin last --force
+        git push origin last --force
 
     # Tworzenie release dla tagów
     - name: Create Release
