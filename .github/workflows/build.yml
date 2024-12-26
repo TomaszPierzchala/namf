@@ -87,11 +87,15 @@ jobs:
         git tag -f last
         git push origin last --force
 
+    - name: Fetch Tags
+      run: git fetch --tags
+
     # Tworzenie release dla tagów
     - name: Create Release
 #      if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
+        tag_name: last
         files: |
           builds/esp8266/firmware-esp8266-*.bin
         draft: false
