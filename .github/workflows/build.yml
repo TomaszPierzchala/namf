@@ -54,13 +54,14 @@ jobs:
         # ESP8266 builds
         echo "Building ESP8266 $lang variant..."
         pio run -e "lang_$lang"
-        
+
         if [[ "${{ github.event_name }}" == "pull_request" ]]; then
           # Beta build
           cp .pio/build/lang_$lang/firmware.bin builds/esp8266/firmware-esp8266-beta.bin
         else
           # Alfa build
           cp .pio/build/lang_$lang/firmware.bin builds/esp8266/firmware-esp8266-alfa.bin
+          cp .pio/build/lang_$lang/firmware.elf builds/esp8266/firmware-esp8266-alfa.elf
         fi
 
     - name: Commit development builds
@@ -89,6 +90,7 @@ jobs:
         tag_name: latest
         files: |
           builds/esp8266/firmware-esp8266-*.bin
+          builds/esp8266/firmware-esp8266-*.elf
         draft: false
         prerelease: false
       env:
