@@ -42,7 +42,7 @@ jobs:
     - name: Debug PlatformIO
       run: |
         pio system info
-        pio platform list
+        pio pkg list
 
     
     - name: Build firmware variants
