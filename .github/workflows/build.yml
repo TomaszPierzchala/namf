@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      lang: pl
     
     steps:
     - uses: actions/checkout@v3
@@ -50,18 +52,16 @@ jobs:
         mkdir -p builds/esp8266
         
         # ESP8266 builds
-        for lang in pl en; do
-          echo "Building ESP8266 $lang variant..."
-          pio run -e "lang_$lang"
-          
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            # Beta build
-            cp .pio/build/lang_$lang/firmware.bin builds/esp8266/firmware-esp8266-$lang-beta.bin
-          else
-            # Alfa build
-            cp .pio/build/lang_$lang/firmware.bin builds/esp8266/firmware-esp8266-$lang-alfa.bin
-          fi
-        done
+        echo "Building ESP8266 $lang variant..."
+        pio run -e "lang_$lang"
+        
+        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          # Beta build
+          cp .pio/build/lang_$lang/firmware.bin builds/esp8266/firmware-esp8266-beta.bin
+        else
+          # Alfa build
+          cp .pio/build/lang_$lang/firmware.bin builds/esp8266/firmware-esp8266-alfa.bin
+        fi
 
     - name: Commit development builds
       run: |
