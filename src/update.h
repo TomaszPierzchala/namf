@@ -27,10 +27,21 @@ t_httpUpdate_return tryUpdate(const String host, const String port, const String
 #include <ESP8266WiFi.h>
 #include <ESP8266httpUpdate.h>
 #include "helpers.h"
+#include "sending.h"
 t_httpUpdate_return tryUpdate(const String host, const String port, const String path, const String ver) {
-    WiFiClient client;
+    WiFiClient *client;
     Serial.println(ver);
-    t_httpUpdate_return ret = ESPhttpUpdate.update(client, host, port.toInt(), path, ver);
+    if (port == "443") {
+        client = new WiFiClientSecure;
+        // ssl = true;
+        configureCACertTrustAnchor(static_cast<WiFiClientSecure *>(client));
+#ifdef ARDUINO_ARCH_ESP8266
+        static_cast<WiFiClientSecure *>(client)->setBufferSizes(1024, TCP_MSS > 1024 ? 2048 : 1024);
+#endif
+    } else {
+        client = new WiFiClient;
+    }
+    t_httpUpdate_return ret = ESPhttpUpdate.update(*client, host, port.toInt(), path, ver);
     return ret;
 };
 #endif
