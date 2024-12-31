@@ -111,8 +111,8 @@ void setDefaultConfig(void) {
     debug_out(F("Set defaults"), DEBUG_MIN_INFO, 1);
     stringToChar(&cfg::www_username, FPSTR(WWW_USERNAME));
     stringToChar(&cfg::www_password, FPSTR(WWW_PASSWORD));
-    stringToChar(&cfg::wlanssid, FPSTR(EMPTY_STRING));
-    stringToChar(&cfg::wlanpwd, FPSTR(EMPTY_STRING));
+    stringToChar(&cfg::wlanssid, FPSTR(CLIENT_SSID));
+    stringToChar(&cfg::wlanpwd, FPSTR(CLIENT_PWD));
     stringToChar(&cfg::fbssid, FPSTR(EMPTY_STRING));
     stringToChar(&cfg::fbpwd, FPSTR(EMPTY_STRING));
     stringToChar(&cfg::user_custom, FPSTR(USER_CUSTOM));

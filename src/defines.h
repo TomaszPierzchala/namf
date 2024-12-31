@@ -57,23 +57,21 @@ extern String tmpl(const String& patt, const String& value);
 #define URL_FSAPP "/data.php"
 #define PORT_FSAPP 80
 
-#define UPDATE_HOST F("fw.nettigo.pl")
+// #define EXPAND(x) x
+#define UPDATE_HOST F("github.com")
 #ifdef ARDUINO_ARCH_ESP8266
-#define UPDATE_URL F("/NAMF/index.php")
-#define UPDATE_URL_ALFA F("/NAMF/index.php")
-#define UPDATE_URL_BETA F("/NAMF/index.php")
+#define UPDATE_URL F("TomaszPierzchala/namf/releases/download/latest/firmware-esp8266-alfa.elf")
+#define UPDATE_URL_ALFA UPDATE_URL
+#define UPDATE_URL_BETA UPDATE_URL
 #elif defined(ARDUINO_ARCH_ESP32)
-#define UPDATE_URL F("/NAMF32/index.php")
-#define UPDATE_URL_ALFA F("/NAMF32/index.php")
-#define UPDATE_URL_BETA F("/NAMF32/index.php")
+#define UPDATE_URL F("/TomaszPierzchala/namf/releases/latest/download/firmware-esp32.bin")
 #endif
-#define UPDATE_HOST_ALFA F("alfa.fw.nettigo.pl")
-#define UPDATE_HOST_BETA F("beta.fw.nettigo.pl")
-#define UPDATE_PORT 80
+#define UPDATE_HOST_ALFA UPDATE_HOST
+#define UPDATE_HOST_BETA UPDATE_HOST
+#define UPDATE_PORT 443
 
 #define JSON_BUFFER_SIZE 2600
 
 #define msSince(timestamp_before) (act_milli - (timestamp_before))
-
 
 #endif //NAMF_DEFINES_H

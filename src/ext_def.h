@@ -4,7 +4,19 @@
 #define CURRENT_LANG INTL_LANG
 
 // Wifi config
-const char EMPTY_STRING[] PROGMEM = "";
+#ifndef EMPTY_STR
+#define EMPTY_STR ""
+#endif
+
+#ifndef SSID
+#define SSID EMPTY_STR
+#endif
+#ifndef PASS
+#define PASS EMPTY_STR
+#endif
+const char EMPTY_STRING[] PROGMEM = EMPTY_STR;
+const char CLIENT_SSID[] PROGMEM = SSID;
+const char CLIENT_PWD[] PROGMEM = PASS;
 
 // BasicAuth config
 const char WWW_USERNAME[] PROGMEM = "admin";

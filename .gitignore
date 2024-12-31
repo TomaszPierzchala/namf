@@ -24,3 +24,4 @@ src/lang/bckps/*
 .add_build_time
 .vscode/*
 upload_config.ini
+dev_secrets.ini

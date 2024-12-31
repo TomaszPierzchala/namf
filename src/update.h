@@ -28,20 +28,49 @@ t_httpUpdate_return tryUpdate(const String host, const String port, const String
 #include <ESP8266httpUpdate.h>
 #include "helpers.h"
 #include "sending.h"
+
+HTTPUpdateErrorCB errorCallback = [](int error) {
+    debug_out(F(">> on error : ") + String(error), DEBUG_MIN_INFO,true);
+};
 t_httpUpdate_return tryUpdate(const String host, const String port, const String path, const String ver) {
     WiFiClient *client;
-    Serial.println(ver);
     if (port == "443") {
-        client = new WiFiClientSecure;
+        // client = new WiFiClientSecure;
+        std::unique_ptr<BearSSL::WiFiClientSecure> client(new BearSSL::WiFiClientSecure);
+    
         // ssl = true;
-        configureCACertTrustAnchor(static_cast<WiFiClientSecure *>(client));
+        // configureCACertTrustAnchor(static_cast<WiFiClientSecure *>(client));
 #ifdef ARDUINO_ARCH_ESP8266
-        static_cast<WiFiClientSecure *>(client)->setBufferSizes(1024, TCP_MSS > 1024 ? 2048 : 1024);
+        /*static_cast<WiFiClientSecure *>*/(client)->setBufferSizes(1024, TCP_MSS > 1024 ? 2048 : 1024);
 #endif
     } else {
         client = new WiFiClient;
     }
-    t_httpUpdate_return ret = ESPhttpUpdate.update(*client, host, port.toInt(), path, ver);
+    client->setTimeout(20000);
+    // static_cast<WiFiClientSecure *>(client)->setInsecure();
+    debug_out(F("Update checked: http://")+host+"/"+path, DEBUG_MIN_INFO,true);
+    HTTPClient http;
+    http.begin(*client, "http://"+host+"/"+path);
+    http.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
+    http.setTimeout(20000);
+    // http.useHTTP10(true);
+    // http.setUserAgent(F("ESP8266-http-Update"));
+    /*
+    int response = http.GET();
+    if (response == HTTP_CODE_FOUND){
+        debug_out(F("HTTP: 302"), DEBUG_MIN_INFO,true);
+    } else {
+        debug_out(F("HTTP: ")+String(response), DEBUG_MIN_INFO,true);
+    }
+    */
+    debug_out(F(">>>> location= ")+http.getLocation(), DEBUG_MIN_INFO,true);
+    debug_out(F(">>>> ver : ")+ver, DEBUG_MIN_INFO,true);
+    // HTTPUpdateOverrided updater;
+    ESPhttpUpdate.onError(errorCallback);
+    t_httpUpdate_return ret =  ESPhttpUpdate.update(http, ver);
+    debug_out(F("Update succeded"), DEBUG_MIN_INFO,true);
+    
+    debug_out(F(">>>> location= ")+http.getLocation(), DEBUG_MIN_INFO,true);
     return ret;
 };
 #endif
@@ -75,15 +104,18 @@ void verifyUpdate (t_httpUpdate_return result) {
         case HTTP_UPDATE_FAILED:
             display_debug(F("[update] Update failed."),"");
             Serial.println(F("[update] Update failed."));
+            debug_out(F("HTTP_UPDATE_FAILED"), DEBUG_MIN_INFO,true);
             break;
         case HTTP_UPDATE_NO_UPDATES:
             display_debug(F("[update] no Update."), String(SOFTWARE_VERSION));
             Serial.println(F("[update] no Update."));
             Serial.print(F("Still running version: "));
             Serial.println(SOFTWARE_VERSION);
+            debug_out(F("HTTP_UPDATE_NO_UPDATES"), DEBUG_MIN_INFO,true);
             break;
         case HTTP_UPDATE_OK:
             Serial.println(F("[update] Update ok.")); // may not called we reboot the ESP
+            debug_out(F("HTTP_UPDATE_OK"), DEBUG_MIN_INFO,true);
             break;
     }
 
