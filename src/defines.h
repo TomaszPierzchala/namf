@@ -22,7 +22,7 @@ const unsigned long DURATION_BEFORE_FORCED_RESTART_MS = ONE_DAY_IN_MS * 28;  // 
 
 typedef struct memory_stat_t {
     uint32_t freeHeap;
-    uint16_t maxFreeBlock;
+    uint32_t maxFreeBlock;
     uint8_t frag;
     uint32_t freeContStack;
 } memory_stat_t;

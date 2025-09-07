@@ -41,7 +41,7 @@ namespace Reporting {
 
     void resetMinMaxStats() {
         memoryStatsMax = memory_stat_t{0,0,0, 0};
-        memoryStatsMin = memory_stat_t{UINT32_MAX, UINT16_MAX, UINT8_MAX, UINT32_MAX};
+        memoryStatsMin = memory_stat_t{UINT32_MAX, UINT32_MAX, UINT8_MAX, UINT32_MAX};
         maxRSSI = REPORTING_MAXRSSI_NO_VAL;
         minRSSI = REPORTING_MINRSSI_NO_VAL;
     }
@@ -195,8 +195,8 @@ namespace Reporting {
                 body.concat(F("},"));
             }
 
-            body.concat(Var2Json(F("minMaxFreeBlock"),memoryStatsMin.maxFreeBlock));
-            body.concat(Var2Json(F("maxMaxFreeBlock"),memoryStatsMax.maxFreeBlock));
+            body.concat(Var2Json(F("minMaxFreeBlock"), static_cast<unsigned long>(memoryStatsMin.maxFreeBlock)));
+            body.concat(Var2Json(F("maxMaxFreeBlock"), static_cast<unsigned long>(memoryStatsMax.maxFreeBlock)));
             body.concat(Var2Json(F("maxFrag"),memoryStatsMax.frag));
             body.concat(Var2Json(F("minFrag"),memoryStatsMin.frag));
             if (minRSSI != REPORTING_MINRSSI_NO_VAL) body.concat(Var2Json(F("minRSSI"),minRSSI));

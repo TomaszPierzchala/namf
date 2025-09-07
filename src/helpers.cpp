@@ -4,6 +4,7 @@
 #include "variables.h"
 #include "helpers.h"
 #include "system/scheduler.h"
+#include <LittleFS.h>
 
 extern const char UNIT_PERCENT[] PROGMEM = "%";
 extern const char UNIT_CELCIUS[] PROGMEM = "°C";
@@ -580,9 +581,9 @@ int writeConfigRaw(const String &json_string, const char * filename) {
     Debug.resumeWebCopy();
     File configFile;
     if (filename) {
-        configFile = SPIFFS.open(filename, "w");
+        configFile = LittleFS.open(filename, "w");
     } else {
-        configFile = SPIFFS.open("/config.json", "w");
+        configFile = LittleFS.open("/config.json", "w");
     }
     if (configFile) {
         configFile.print(json_string);
@@ -970,7 +971,7 @@ String form_select_lang() {
 }
 void resetMemoryStats() {
     memoryStatsMax = memory_stat_t{0,0,0, 0};
-    memoryStatsMin = memory_stat_t{UINT32_MAX, UINT16_MAX, UINT8_MAX, UINT32_MAX};
+    memoryStatsMin = memory_stat_t{UINT32_MAX, UINT32_MAX, UINT8_MAX, UINT32_MAX};
 }
 void collectMemStats() {
     memory_stat_t memoryStats;
