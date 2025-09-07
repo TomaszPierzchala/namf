@@ -4,21 +4,21 @@
 
 #ifndef NAMF_ESP8266_FACTORY_RESET_H
 #define NAMF_ESP8266_FACTORY_RESET_H
-
+#include <LittleFS.h>
 
 //clear Factory Reset markers
 void clearFactoryResetMarkers() {
     debug_out(F("Clear factory reset markers"), DEBUG_ERROR);
-    if (SPIFFS.exists("/fr1")) SPIFFS.remove("/fr1");
-    if (SPIFFS.exists("/fr")) SPIFFS.remove("/fr");
+    if (LittleFS.exists("/fr1")) LittleFS.remove("/fr1");
+    if (LittleFS.exists("/fr")) LittleFS.remove("/fr");
 }
 
 
 void checkFactoryReset() {
     debug_out(F("mounting FS: "), DEBUG_MIN_INFO, 0);
-    if (!SPIFFS.begin()) {
+    if (!LittleFS.begin()) {
 #ifdef ARDUINO_ARCH_ESP32
-        SPIFFS.format();
+        LittleFS.format();
         debug_out(F("\nFilesystem formatted, restart!"), DEBUG_ERROR);
         ESP.restart();
 
@@ -40,23 +40,23 @@ void checkFactoryReset() {
     }
     debug_out(F("Checking factory reset condition"), DEBUG_MED_INFO);
 
-    if (SPIFFS.exists("/fr1")) {
+    if (LittleFS.exists("/fr1")) {
         //do factory reset
         debug_out(F("\n\n*************** FACTORY RESET! ****************\n\n"), DEBUG_ERROR);
-        if (SPIFFS.exists("/config.json"))
-            SPIFFS.remove("/config.json");
+        if (LittleFS.exists("/config.json"))
+            LittleFS.remove("/config.json");
         clearFactoryResetMarkers();
         delay(1000);
         ESP.restart();
     } else {
-        if(SPIFFS.exists(("/fr"))) {
+        if(LittleFS.exists(("/fr"))) {
             debug_out(F("\n\n********************* FACTORY RESET prepared, press reset once more for Factory Reset to defaults! *************\n\n"), DEBUG_ERROR);
-            File f=SPIFFS.open("/fr1","w");
+            File f=LittleFS.open("/fr1","w");
             f.close();
-            SPIFFS.remove("/fr");
+            LittleFS.remove("/fr");
         } else {
             debug_out(F("\nFACTORY RESET start - press reset two times"), DEBUG_ERROR);
-            File f=SPIFFS.open("/fr","w");
+            File f=LittleFS.open("/fr","w");
             f.close();
         }
     }
