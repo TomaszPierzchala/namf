@@ -85,6 +85,8 @@ static bool PMS_cmd(PmSensorCmd cmd) {
 	case PmSensorCmd::VersionDate:
 		assert(false && "not supported by this sensor");
 		break;
+	default:
+		break;
 	}
 	serialSDS.write(buf, cmd_len);
 	return cmd != PmSensorCmd::Stop;
