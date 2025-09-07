@@ -8,15 +8,15 @@
 #define EMPTY_STR ""
 #endif
 
-#ifndef SSID
-#define SSID EMPTY_STR
+#ifndef WIFI_SSID
+#define WIFI_SSID EMPTY_STR
 #endif
-#ifndef PASS
-#define PASS EMPTY_STR
+#ifndef WIFI_PASS
+#define WIFI_PASS EMPTY_STR
 #endif
 const char EMPTY_STRING[] PROGMEM = EMPTY_STR;
-const char CLIENT_SSID[] PROGMEM = SSID;
-const char CLIENT_PWD[] PROGMEM = PASS;
+const char CLIENT_SSID[] PROGMEM = WIFI_SSID;
+const char CLIENT_PWD[] PROGMEM = WIFI_PASS;
 
 // BasicAuth config
 const char WWW_USERNAME[] PROGMEM = "admin";
