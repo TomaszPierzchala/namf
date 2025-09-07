@@ -287,7 +287,7 @@ namespace BME280 {
                 }
 
                 return interval();
-            case SimpleScheduler::RUN:
+            case SimpleScheduler::RUN: {
                 if (!readyBME280()) {
                     return 10000;
                 }
@@ -296,6 +296,16 @@ namespace BME280 {
                 if (left == 0) left = 100;
                 if (sampleCount >= SAMPLE_SIZE) return left;  // we are full wait till period end
                 return interval();
+            }
+            case SimpleScheduler::STOP: {
+                // ADDED warning removing - realese memory
+                delete[] samplesT; samplesT = nullptr;
+                delete[] samplesP; samplesP = nullptr;
+                delete[] samplesH; samplesH = nullptr;
+                return 0;  // 0 - no more calls to this sensor
+            }
+            default:
+                return 10000;
         }
         return 10000;
 
