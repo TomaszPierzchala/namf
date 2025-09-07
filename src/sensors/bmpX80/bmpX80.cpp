@@ -229,12 +229,21 @@ namespace BMPx80 {
                 }
                 return time2Measure() - 5000 -
                        SAMPLE_SIZE * 5000;    //do not deregister - on status page we can write about failure
-            case SimpleScheduler::RUN:
+            case SimpleScheduler::RUN: {
                 if (!readyBMPx80()) {
                     return 10000;
                 }
                 readFromSensor();
                 return 5000;
+            }
+            case SimpleScheduler::STOP: {
+                // ADDED warning removing - realese memory
+                delete[] samplesT; samplesT = nullptr;
+                delete[] samplesP; samplesP = nullptr;
+                return 0;  // 0 - no more calls to this sensor
+            }
+            default:
+                return 10000;
         }
         return 10000;
 
