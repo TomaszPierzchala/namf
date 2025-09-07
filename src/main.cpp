@@ -24,7 +24,6 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
-#include <SPIFFS.h>
    struct FSInfo {
         size_t totalBytes;
         size_t usedBytes;
@@ -34,6 +33,7 @@
         size_t maxPathLength;
     };
 #endif
+#include <LittleFS.h>
 
 #include <ArduinoOTA.h>
 #include <base64.h>
@@ -135,10 +135,10 @@ void setDefaultConfig(void) {
  *****************************************************************/
 void readConfig() {
     setDefaultConfig();
-		if (SPIFFS.exists("/config.json")) {
+		if (LittleFS.exists("/config.json")) {
 			//file exists, reading and loading
 			debug_out(F("reading config"), DEBUG_MED_INFO, 1);
-			File configFile = SPIFFS.open("/config.json", "r");
+			File configFile = LittleFS.open("/config.json", "r");
             if (!readAndParseConfigFile(configFile)){
                 //not failed opening & reading
                 debug_out(F("Config parsed"), DEBUG_MIN_INFO, true);
@@ -682,17 +682,9 @@ void setup() {
 
 
     FSInfo fs_info;
-#ifdef ARDUINO_ARCH_ESP8266
-    SPIFFS.info(fs_info);
-#else
-    fs_info.totalBytes = SPIFFS.totalBytes();
-    fs_info.usedBytes = SPIFFS.usedBytes();
-    fs_info.blockSize = 0;
-    fs_info.pageSize = 0;
-    fs_info.maxOpenFiles = 0;
-    fs_info.maxPathLength = 0;
-#endif
-    debug_out(F("SPIFFS (kB): "), DEBUG_ERROR, false);
+	LittleFS.info(fs_info);
+
+    debug_out(F("LittleFS (kB): "), DEBUG_ERROR, false);
     debug_out(String(fs_info.totalBytes/(1024)), DEBUG_ERROR);
 
     debug_out(F("Free sketch space (kB): "), DEBUG_ERROR, false);
