@@ -106,13 +106,24 @@ unsigned setDefault(char **dst, const __FlashStringHelper *defaultValue) {
 }
 
 //same as stringToChar but for JSON char string as source
-unsigned charStringToChar(char *dst, const char *src) {
-    if (dst != nullptr) delete (dst);
-    size_t len = strlen(src);
-    dst = new(char[len + 1]);
-    if (dst == nullptr) return 0;
-    strncpy(dst, src, len+1);
-    return len + 1;
+unsigned int charStringToChar(char*& dst, const char* src) {
+    // If memory is already allocated, release it properly
+    if (dst != nullptr) {
+        delete[] dst;
+        dst = nullptr;
+    }
+
+    // Get the length of the source string
+    size_t len = std::strlen(src);
+
+    // Allocate new char array (+1 for the null terminator)
+    dst = new char[len + 1];
+
+    // Copy the content including the null terminator
+    std::strncpy(dst, src, len + 1);
+
+    // Return the size including the null terminator
+    return static_cast<unsigned int>(len + 1);
 }
 
 /*****************************************************************
