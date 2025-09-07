@@ -253,8 +253,8 @@ namespace HECA {
                 getData();
                 return 1000;
                 break;
-
-
+            default:
+                break;
         }
         return 1000;
     }
