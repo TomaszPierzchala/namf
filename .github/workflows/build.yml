@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      lang: pl
+      custom_lang: pl
     
     steps:
     - uses: actions/checkout@v3
@@ -52,8 +52,8 @@ jobs:
         mkdir -p builds/esp8266
         
         # ESP8266 builds
-        echo "Building ESP8266 $lang variant..."
-        pio run -e "lang_$lang"
+        echo "Building ESP8266 $cutsom_lang variant..."
+        pio run -e "lang_$custom_lang"
 
         if [[ "${{ github.event_name }}" == "pull_request" ]]; then
           # Beta build
