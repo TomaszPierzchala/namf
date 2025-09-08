@@ -1,4 +1,6 @@
 #include "stack_dump.h"
+#include <LittleFS.h>
+
 
 extern "C" void custom_crash_callback(struct rst_info *rst_info, uint32_t stack, uint32_t stack_end) {
 #ifdef ARDUINO_ARCH_ESP8266
@@ -6,7 +8,7 @@ extern "C" void custom_crash_callback(struct rst_info *rst_info, uint32_t stack,
     File out;
     boolean dump = true;
     noInterrupts();
-    out = SPIFFS.open("/stack_dump", "w");
+    out = LittleFS.open("/stack_dump", "w");
     time_t now = time(nullptr);
     char tmp[48];
     strncpy(tmp, ctime(&now), 47);
