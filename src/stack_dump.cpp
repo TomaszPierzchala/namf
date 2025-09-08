@@ -10,7 +10,7 @@ extern "C" void custom_crash_callback(struct rst_info *rst_info, uint32_t stack,
     noInterrupts();
     out = LittleFS.open("/stack_dump", "w");
     time_t now = time(nullptr);
-    char tmp[48];
+    char tmp[50];
     strncpy(tmp, ctime(&now), 47);
     out.print(tmp);
     out.println(SOFTWARE_VERSION);
@@ -61,7 +61,7 @@ extern "C" void custom_crash_callback(struct rst_info *rst_info, uint32_t stack,
             uint32_t *values = (uint32_t *) (pos);
             //rough indicator: stack frames usually have SP saved as the second word
             bool looksLikeStackFrame = (values[2] == pos + 0x10);
-            snprintf(tmp, 47, "%08x:  %08x %08x %08x %08x %c", pos, values[0], values[1], values[2], values[3],
+            snprintf(tmp, 49, "%08x:  %08x %08x %08x %08x %c", pos, values[0], values[1], values[2], values[3],
                      (looksLikeStackFrame) ? '<' : ' ');
             out.println(tmp);
         }
