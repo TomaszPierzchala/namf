@@ -247,6 +247,8 @@ namespace SDS011 {
 //                Serial.println(F("SDS cmd: version"));
                 memcpy_P(buf, version_cmd, cmd_len);
                 break;
+            default:
+                break;
         }
         clearIncoming();
         serialSDS.write(buf, cmd_len);
@@ -538,7 +540,6 @@ namespace SDS011 {
             res.concat(table_row_from_value(F("SDS011"), F("Failed I2C PCF"), String(hwWtdgErrors), ""));
 
         }
-        float fr = 0;
 
         res.concat(table_row_from_value(F("SDS011"), F("Checksum failures"),
                                     String(channelSDS.errorRate()) + F("% ") + String(channelSDS.checksumErrCnt()) + F("/") + String(
