@@ -1,7 +1,7 @@
 //
 // Created by viciu on 17.02.2020.
 //
-
+#include <LittleFS.h>
 #include "webserver.h"
 #include "wifi.h"
 unsigned maxSizeTemp = 0;
@@ -134,13 +134,13 @@ bool webserver_request_auth(bool dbg_msg) {
     return true;
 }
 void webserver_dump_stack(){
-    if (!SPIFFS.exists ("/stack_dump")) {
+    if (!LittleFS.exists ("/stack_dump")) {
         server.send(200, FPSTR(TXT_CONTENT_TYPE_TEXT_PLAIN), "No stack dump");
         return;
     }
     File dump;
     char buf[100];
-    dump = SPIFFS.open("/stack_dump","r");
+    dump = LittleFS.open("/stack_dump","r");
     server.setContentLength(CONTENT_LENGTH_UNKNOWN);
     server.send(200, FPSTR(TXT_CONTENT_TYPE_TEXT_PLAIN), "");
     unsigned size = dump.size();
@@ -316,7 +316,7 @@ void webserver_config_json_save() {
                 server.send(500, TXT_CONTENT_TYPE_TEXT_PLAIN,F("Error writing config"));
                 return; //we dont have reason to restart, current config was not altered yet
             };
-            File tempCfg = SPIFFS.open ("/test.json", "r");
+            File tempCfg = LittleFS.open ("/test.json", "r");
             if (readAndParseConfigFile(tempCfg)) {
                 server.send(500, TXT_CONTENT_TYPE_TEXT_PLAIN,F("Error parsing config"));
                 delay(500);
@@ -1116,9 +1116,9 @@ void webserver_removeConfig() {
         page_content.replace("{c}", FPSTR(INTL_CANCEL));
 
     } else {
-        if (SPIFFS.exists("/config.json")) {	//file exists
+        if (LittleFS.exists("/config.json")) {	//file exists
             debug_out(F("removing config.json..."), DEBUG_MIN_INFO, 1);
-            if (SPIFFS.remove("/config.json")) {
+            if (LittleFS.remove("/config.json")) {
                 page_content += tmpl(message_string, FPSTR(INTL_CONFIG_DELETED));
             } else {
                 page_content += tmpl(message_string, FPSTR(INTL_CONFIG_CAN_NOT_BE_DELETED));
