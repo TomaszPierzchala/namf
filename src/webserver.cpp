@@ -367,9 +367,10 @@ void readPwdParam(char **dst, const String key) {
 
 void webserverConfigBasic(String  & page_content) {
 }
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "bugprone-macro-parentheses"
+#ifdef __clang__
+    #pragma clang diagnostic push
+    #pragma ide diagnostic ignored "bugprone-macro-parentheses"
+#endif
 void parse_config_request(String &page_content) {
     using namespace cfg;
     String masked_pwd = "";
@@ -539,7 +540,9 @@ void parse_config_request(String &page_content) {
     page_content.concat(formSectionHeader(FPSTR(INTL_SENSOR_IS_REBOOTING), 1));
 
 }
-#pragma clang diagnostic pop
+#ifdef __clang__
+    #pragma clang diagnostic pop
+#endif
 
 void tabTemplate(String &page_content, const __FlashStringHelper *id, const __FlashStringHelper *name){
     page_content.concat(F("<button class=\"tablinks\" onclick=\"tab(event, '"));
