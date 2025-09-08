@@ -57,11 +57,11 @@ jobs:
 
         if [[ "${{ github.event_name }}" == "pull_request" ]]; then
           # Beta build
-          cp .pio/build/lang_$lang/firmware.bin builds/esp8266/firmware-beta.bin
+          cp .pio/build/lang_$lang/firmware.bin builds/esp8266/firmware-esp8266-$lang-beta.bin
         else
           # Alfa build
-          cp .pio/build/lang_$lang/firmware.bin builds/esp8266/firmware-alfa.bin
-          cp .pio/build/lang_$lang/firmware.elf builds/esp8266/firmware-alfa.elf
+          cp .pio/build/lang_$lang/firmware.bin builds/esp8266/firmware-esp8266-$lang-alfa.bin
+          cp .pio/build/lang_$lang/firmware.elf builds/esp8266/firmware-esp8266-$lang-alfa.elf
         fi
 
     - name: Commit development builds
