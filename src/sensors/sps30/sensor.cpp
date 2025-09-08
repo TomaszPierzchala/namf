@@ -166,6 +166,8 @@ namespace SPS30 {
                     measurement_count++;
                 }
                 return refresh * 1000;
+            default:
+                break;
         }
         return 15 * 1000;
     }

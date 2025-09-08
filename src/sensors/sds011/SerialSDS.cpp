@@ -141,6 +141,8 @@ void SerialSDS::logReply(ResponseType type) {
             Serial.println(F("FIRMWARE VERSION response"));
             break;
 
+        default:
+            break;
     }
 //    Serial.println();
 }
