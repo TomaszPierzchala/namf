@@ -60,11 +60,11 @@ extern String tmpl(const String& patt, const String& value);
 // #define EXPAND(x) x
 #define UPDATE_HOST F("github.com")
 #ifdef ARDUINO_ARCH_ESP8266
-#define UPDATE_URL F("TomaszPierzchala/namf/releases/download/latest/firmware-esp8266-alfa.elf")
+#define UPDATE_URL F("TomaszPierzchala/namf/releases/download/latest/firmware-esp8266-pl-alfa.bin")
 #define UPDATE_URL_ALFA UPDATE_URL
 #define UPDATE_URL_BETA UPDATE_URL
 #elif defined(ARDUINO_ARCH_ESP32)
-#define UPDATE_URL F("/TomaszPierzchala/namf/releases/latest/download/firmware-esp32.bin")
+#define UPDATE_URL F("/TomaszPierzchala/namf/releases/download/latest/firmware-esp8266-pl-alfa.bin")
 #endif
 #define UPDATE_HOST_ALFA UPDATE_HOST
 #define UPDATE_HOST_BETA UPDATE_HOST
