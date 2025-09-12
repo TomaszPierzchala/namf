@@ -599,13 +599,8 @@ void webserver_config(){
 
         page_content.concat(formInputGrid(F("wlanssid"), FPSTR(INTL_FS_WIFI_NAME), wlanssid,
                                        35));
-        if (!wificonfig_loop) {
-            page_content.concat(formPasswordGrid(F("wlanpwd"), FPSTR(INTL_PASSWORD), wlanpwd,
+        page_content.concat(formPasswordGrid(F("wlanpwd"), FPSTR(INTL_PASSWORD), wlanpwd,
                                               65));
-        } else {
-            page_content.concat(formInputGrid(F("wlanpwd"), FPSTR(INTL_PASSWORD), F(""),
-                                           65));
-        }
 
         page_content.concat(formSectionHeader(FPSTR(INTL_BASICAUTH)));
         page_content.concat(formCheckboxGrid("www_basicauth_enabled", FPSTR(INTL_ENABLE), www_basicauth_enabled));
