@@ -106,12 +106,17 @@ void disable_unneeded_nmea() {
 	serialGPS.println(F("$PUBX,40,VTG,0,0,0,0*5E"));       // Track made good and ground speed
 }
 
+void initNonTrivials(const char *id);
 //This is meant to be run on first time. Not only sets default values for sensors, but also makes sure
 //that pointers are properly inited
 void setDefaultConfig(void) {
     //init
     debug_out(F("Set defaults"), DEBUG_MIN_INFO, 1);
-    stringToChar(&cfg::www_username, FPSTR(WWW_USERNAME));
+	stringToChar(&cfg::fs_ssid, FPSTR(FS_SSID));
+	initNonTrivials(esp_chipid().c_str());
+
+    stringToChar(&cfg::fs_pwd, FPSTR(FS_PWD));
+	stringToChar(&cfg::www_username, FPSTR(WWW_USERNAME));
     stringToChar(&cfg::www_password, FPSTR(WWW_PASSWORD));
     stringToChar(&cfg::wlanssid, FPSTR(CLIENT_SSID));
     stringToChar(&cfg::wlanpwd, FPSTR(CLIENT_PWD));
@@ -675,10 +680,6 @@ void setup() {
 
     Wire.begin(I2C_PIN_SDA, I2C_PIN_SCL);
     Wire.setClock(100000); // Force bus speed 100 Khz
-
-
-    initNonTrivials(esp_chipid().c_str());
-
 
 
     FSInfo fs_info;

@@ -24,9 +24,14 @@ const char WWW_PASSWORD[] PROGMEM = "admin";
 #define WWW_BASICAUTH_ENABLED 0
 
 // Sensor Wifi config (config mode)
-const char FS_SSID[] PROGMEM = "";
-const char FS_PWD[] PROGMEM =  "";
-
+#ifndef AP_NAME
+#define AP_NAME EMPTY_STR
+#endif
+#ifndef AP_LONG_PASSWORD
+#define AP_LONG_PASSWORD EMPTY_STR
+#endif
+const char FS_SSID[] PROGMEM = AP_NAME;
+const char FS_PWD[] PROGMEM =  AP_LONG_PASSWORD; // min 8 chars for WPA2 as it's the only one protection mode (communication is over HTTP)
 //Where send data
 #define SEND2AQI 0
 #define SEND2DUSTI 1
