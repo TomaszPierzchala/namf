@@ -35,3 +35,17 @@ String generateRandomPassword(uint8_t length = MIN_PASSWD_LENGTH) {
   }
   return out;
 }
+
+bool isPasswordValid(const char* pwd) {
+  if (pwd == nullptr) return false;  // reject null pointer
+
+  // iterate through each character until the null terminator '\0'
+  for (const char* p = pwd; *p != '\0'; ++p) {
+    // check if current character exists in the allowed set
+    if (strchr(PASSWORD_CHARS, *p) == nullptr) {
+      return false;  // found a disallowed character
+    }
+  }
+  return true;  // all characters are valid
+}
+

@@ -8,6 +8,7 @@
 
 
 String generateRandomPassword(uint8_t length = MIN_PASSWD_LENGTH);
+bool isPasswordValid(const char* pwd);
 
 namespace NAMWiFi {
 
@@ -76,9 +77,12 @@ namespace NAMWiFi {
         WiFi.mode(WIFI_AP);
         const IPAddress apIP(192, 168, 4, 1);
         WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
-        if (cfg::fs_pwd == nullptr || strlen(cfg::fs_pwd) < 8 || strlen(cfg::fs_pwd) > 64) {
+        if (cfg::fs_pwd == nullptr || strlen(cfg::fs_pwd) < 8 || strlen(cfg::fs_pwd) > 64
+           || !isPasswordValid(cfg::fs_pwd)) {
             if (strlen(cfg::fs_pwd) < 8 || strlen(cfg::fs_pwd) > 64) {
-               debug_out(F("the AP's password will be REPLACED"), DEBUG_MIN_INFO); 
+               debug_out(F("the AP's password is out of range and will be REPLACED"), DEBUG_MIN_INFO); 
+            } else if (!isPasswordValid(cfg::fs_pwd)) {
+               debug_out(F("the AP's password is INVALID and will be REPLACED"), DEBUG_MIN_INFO); 
             }
             stringToChar(&cfg::fs_pwd, generateRandomPassword().c_str());
         }
