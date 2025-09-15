@@ -1,10 +1,13 @@
 //
 // Created by viciu on 9/19/23.
 //
-
+#include "ext_def.h"
 #include "wifi.h"
 #include "webserver.h"
 #include <DNSServer.h>
+
+
+String generateRandomPassword(uint8_t length = MIN_PASSWD_LENGTH);
 
 namespace NAMWiFi {
 
@@ -73,12 +76,26 @@ namespace NAMWiFi {
         WiFi.mode(WIFI_AP);
         const IPAddress apIP(192, 168, 4, 1);
         WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
-        if (cfg::fs_pwd == nullptr || !strcmp(cfg::fs_pwd, "")) {
-            debug_out(F("Starting AP with default password"), DEBUG_MIN_INFO);
-            WiFi.softAP(cfg::fs_ssid, "nettigo.pl", selectChannelForAp(wifiInfo, count_wifiInfo));
-        } else {
-            WiFi.softAP(cfg::fs_ssid, cfg::fs_pwd, selectChannelForAp(wifiInfo, count_wifiInfo));
+        if (cfg::fs_pwd == nullptr || strlen(cfg::fs_pwd) < 8 || strlen(cfg::fs_pwd) > 64) {
+            if (strlen(cfg::fs_pwd) < 8 || strlen(cfg::fs_pwd) > 64) {
+               debug_out(F("the AP's password will be REPLACED"), DEBUG_MIN_INFO); 
+            }
+            stringToChar(&cfg::fs_pwd, generateRandomPassword().c_str());
         }
+        debug_out(F("Starting AP with ssid: "), DEBUG_MIN_INFO, false);
+        debug_out(cfg::fs_ssid, DEBUG_MIN_INFO);
+        debug_out(F("and AP password: "), DEBUG_MIN_INFO, false); debug_out(cfg::fs_pwd, DEBUG_MIN_INFO);
+        const bool IS_AP_ON = WiFi.softAP(cfg::fs_ssid, cfg::fs_pwd, selectChannelForAp(wifiInfo, count_wifiInfo));
+        debug_out(F("is AP on ?: "), DEBUG_MIN_INFO, false); debug_out(IS_AP_ON ? F("true") : F("false"), DEBUG_MIN_INFO);
+        if (!IS_AP_ON) {
+            debug_out(F(">>> AP did NOT start, regenerate password"), DEBUG_ERROR);
+            stringToChar(&cfg::fs_pwd, generateRandomPassword().c_str());
+            debug_out(F(">>> Restarting AP with ssid: "), DEBUG_MIN_INFO, false); debug_out(cfg::fs_ssid, DEBUG_MIN_INFO);
+            debug_out(F(">>> and new AP password: "), DEBUG_MIN_INFO, false); debug_out(cfg::fs_pwd, DEBUG_MIN_INFO);
+            const bool IS_AP_ON_2ND_TIME = WiFi.softAP(cfg::fs_ssid, cfg::fs_pwd, selectChannelForAp(wifiInfo, count_wifiInfo));
+            debug_out(IS_AP_ON_2ND_TIME ? F(">>> AP restarted !") : F(">>> did NOT restart <<<"), DEBUG_MIN_INFO);
+        }
+
         debug_out(F("Scanning for available SSIDs...."),DEBUG_MIN_INFO, false);
         rescanWiFi();
         debug_out(F(" done. Number of found SSIDs: "),DEBUG_MIN_INFO, false);

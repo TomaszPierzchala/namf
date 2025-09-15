@@ -1,5 +1,8 @@
 #ifndef NAMF_EXT_DEF_H
 #define NAMF_EXT_DEF_H
+#include <Arduino.h>
+
+
 // Language config
 #define CURRENT_LANG INTL_LANG
 
@@ -14,6 +17,11 @@
 #ifndef WIFI_PASS
 #define WIFI_PASS EMPTY_STR
 #endif
+
+#ifndef MIN_PASSWD_LENGTH
+#define MIN_PASSWD_LENGTH 16
+#endif
+
 const char EMPTY_STRING[] PROGMEM = EMPTY_STR;
 const char CLIENT_SSID[] PROGMEM = WIFI_SSID;
 const char CLIENT_PWD[] PROGMEM = WIFI_PASS;
@@ -27,11 +35,11 @@ const char WWW_PASSWORD[] PROGMEM = "admin";
 #ifndef AP_NAME
 #define AP_NAME EMPTY_STR
 #endif
-#ifndef AP_LONG_PASSWORD
-#define AP_LONG_PASSWORD EMPTY_STR
+#ifndef AP_PASSWORD_MAX64_LONG
+#define AP_PASSWORD_MAX64_LONG EMPTY_STR
 #endif
 const char FS_SSID[] PROGMEM = AP_NAME;
-const char FS_PWD[] PROGMEM =  AP_LONG_PASSWORD; // min 8 chars for WPA2 as it's the only one protection mode (communication is over HTTP)
+const char FS_PWD[] PROGMEM =  AP_PASSWORD_MAX64_LONG; // min 8 chars for WPA2 as it's the only one protection mode (communication is over HTTP)
 //Where send data
 #define SEND2AQI 0
 #define SEND2DUSTI 1
