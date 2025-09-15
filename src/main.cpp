@@ -112,11 +112,11 @@ void initNonTrivials(const char *id);
 void setDefaultConfig(void) {
     //init
     debug_out(F("Set defaults"), DEBUG_MIN_INFO, 1);
-	stringToChar(&cfg::fs_ssid, FPSTR(FS_SSID));
-	initNonTrivials(esp_chipid().c_str());
+    stringToChar(&cfg::fs_ssid, FPSTR(FS_SSID));
+    initNonTrivials(esp_chipid().c_str());
 
     stringToChar(&cfg::fs_pwd, FPSTR(FS_PWD));
-	stringToChar(&cfg::www_username, FPSTR(WWW_USERNAME));
+    stringToChar(&cfg::www_username, FPSTR(WWW_USERNAME));
     stringToChar(&cfg::www_password, FPSTR(WWW_PASSWORD));
     stringToChar(&cfg::wlanssid, FPSTR(CLIENT_SSID));
     stringToChar(&cfg::wlanpwd, FPSTR(CLIENT_PWD));
@@ -683,7 +683,7 @@ void setup() {
 
 
     FSInfo fs_info;
-	LittleFS.info(fs_info);
+    LittleFS.info(fs_info);
 
     debug_out(F("LittleFS (kB): "), DEBUG_ERROR, false);
     debug_out(String(fs_info.totalBytes/(1024)), DEBUG_ERROR);
