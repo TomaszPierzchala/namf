@@ -59,6 +59,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: latest
+        name: "The latest ESP8266 version"
         files: |
           builds/esp8266/firmware-esp8266-*.bin
         draft: false
@@ -98,7 +99,7 @@ jobs:
       with:
         tag_name: esp32_test
         name: "Non public, ESP32 version"
-        body: "Hidden as I can not test it."
+        body: "Hidden as I can not test it now"
         files: |
           builds/esp32/firmware-esp32-test.bin
           builds/esp32/firmware-esp32-test.elf
