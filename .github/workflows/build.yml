@@ -86,7 +86,7 @@ jobs:
     - name: Debug github.ref
       run: echo "ESP32 from ${{ github.ref }}"
 
-      - name: Delete old test release/tag
+    - name: Delete old test release/tag
       uses: dev-drprasad/delete-tag-and-release@v0.2.1
       with:
         tag_name: esp32_test
