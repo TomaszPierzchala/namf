@@ -1,6 +1,12 @@
 #include <Arduino.h>
 #include "ext_def.h"
-#include <user_interface.h>   // os_random() - ESP8266 SDK hardware RNG
+#if defined(ESP8266)
+  #include <user_interface.h>
+  #define hw_random() os_random()
+#elif defined(ESP32)
+  #include "esp_system.h"
+  #define hw_random() esp_random()
+#endif
 #include <WString.h>
 
 // Character set for WPA2-PSK password (8..63 ASCII characters)
@@ -12,7 +18,7 @@ static const char PASSWORD_CHARS[] =
 
 // Returns a random byte from hardware RNG
 static inline uint8_t hwRandByte() {
-  return static_cast<uint8_t>(os_random() & 0xFF);
+  return static_cast<uint8_t>(hw_random() & 0xFF);
 }
 
 // Generates a random password of given length (min 8, max 64)
