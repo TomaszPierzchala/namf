@@ -2,8 +2,8 @@
 // Created by viciu on 9/19/23.
 //
 #include "ext_def.h"
-#include "wifi.h"
-#include "webserver.h"
+#include "localWifi.h"
+#include "localWebserver.h"
 #include <DNSServer.h>
 
 

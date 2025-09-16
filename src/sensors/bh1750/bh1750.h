@@ -9,7 +9,7 @@
 #include "system/scheduler.h"
 #include "helpers.h"
 #include "html-content.h"
-#include "webserver.h"
+#include "localWebserver.h"
 #include <BH1750.h> //unfortunate sensor class name clash
 
 namespace BH17 {

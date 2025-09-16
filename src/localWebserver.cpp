@@ -2,8 +2,8 @@
 // Created by viciu on 17.02.2020.
 //
 #include <LittleFS.h>
-#include "webserver.h"
-#include "wifi.h"
+#include "localWebserver.h"
+#include "localWifi.h"
 unsigned maxSizeTemp = 0;
 void webserverPartialSend(String &s) {
     if (s.length() == 0) return;    //do not end by accident, when no data to send

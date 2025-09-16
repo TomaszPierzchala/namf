@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include "variables.h"
 #include "helpers.h"
-#include "webserver.h"
+#include "localWebserver.h"
 
 namespace MHZ14A {
     extern const char KEY[] PROGMEM;

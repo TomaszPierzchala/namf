@@ -10,7 +10,7 @@
 #include "../../defines.h"
 #include "../../helpers.h"
 #include "../../html-content.h"
-#include "../../webserver.h"
+#include "../../localWebserver.h"
 
 #if defined(ESP8266)
 #include <ESP8266WiFi.h>

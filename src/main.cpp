@@ -7,11 +7,11 @@
 #include "variables.h"
 //#include <Schedule.h>
 #include "variables_init.h"
-#include "update.h"
+#include "localUpdate.h"
 #include "helpers.h"
 #include "system/scheduler.h"
 #include "system/components.h"
-#include "wifi.h"
+#include "localWifi.h"
 
 #ifdef NAM_LORAWAN
 #include "lora/lorawan.h"
@@ -44,7 +44,7 @@
 #include "system/reporting.h"
 
 #include "html-content.h"
-#include "webserver.h"
+#include "localWebserver.h"
 #include "sending.h"
 #include "sensors/sds011/sds011.h"
 //#include "sensors/bme280.h"
