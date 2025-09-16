@@ -56,18 +56,18 @@ jobs:
         pio run -e "lang_$lang"
 
         echo "Building ESP32 $lang variant..."
-        pio run -e "lang_${lang}_32"
+        pio run -e "lang_en_32"
 
         if [[ "${{ github.event_name }}" == "pull_request" ]]; then
           # Beta builds
           cp .pio/build/lang_$lang/firmware.bin builds/esp8266/firmware-esp8266-$lang-beta.bin
-          cp .pio/build/lang_${lang}_32/firmware.bin builds/esp32/firmware-esp32-$lang-beta.bin
+          cp .pio/build/lang_en_32/firmware.bin builds/esp32/firmware-esp32-en-beta.bin
         else
           # Alfa builds
           cp .pio/build/lang_$lang/firmware.bin builds/esp8266/firmware-esp8266-$lang-alfa.bin
           
-          cp .pio/build/lang_${lang}_32/firmware.bin builds/esp32/firmware-esp32-$lang-alfa.bin
-          cp .pio/build/lang_${lang}_32/firmware.elf builds/esp32/firmware-esp32-$lang-alfa.elf
+          cp .pio/build/lang_en_32/firmware.bin builds/esp32/firmware-esp32-en-alfa.bin
+          cp .pio/build/lang_en_32/firmware.elf builds/esp32/firmware-esp32-en-alfa.elf
         fi
 
     - name: Commit development builds
