@@ -153,7 +153,9 @@ void readConfig() {
             };
 		} else {
 			debug_out(F("config file not found, resetting WiFi settings ..."), DEBUG_ERROR, 1);
+#if defined(ESP8266)
             ESP.eraseConfig();
+#endif
 		}
 }
 
@@ -683,7 +685,16 @@ void setup() {
 
 
     FSInfo fs_info;
+#ifdef ARDUINO_ARCH_ESP8266
     LittleFS.info(fs_info);
+#else
+    fs_info.totalBytes = LittleFS.totalBytes();
+    fs_info.usedBytes = LittleFS.usedBytes();
+    fs_info.blockSize = 0;
+    fs_info.pageSize = 0;
+    fs_info.maxOpenFiles = 0;
+    fs_info.maxPathLength = 0;
+#endif
 
     debug_out(F("LittleFS (kB): "), DEBUG_ERROR, false);
     debug_out(String(fs_info.totalBytes/(1024)), DEBUG_ERROR);
