@@ -2,84 +2,48 @@ name: Build Firmware
 
 on:
   push:
-    branches: [ github ]
+    branches: 
+      - github
+      - esp32/*
   pull_request:
     branches: [ github ]
 
 jobs:
   build:
+    if: github.ref == 'refs/heads/github'
     runs-on: ubuntu-latest
     env:
       lang: pl
     
     steps:
     - uses: actions/checkout@v3
-    
-    - name: Cache pip
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-    
-    - name: Cache PlatformIO
-      uses: actions/cache@v3
-      with:
-        path: ~/.platformio
-        key: ${{ runner.os }}-platformio-${{ hashFiles('**/platformio.ini') }}
-        restore-keys: |
-          ${{ runner.os }}-platformio-
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
-    
-    - name: Install PlatformIO
-      run: |
-        python -m pip install --upgrade pip
-        pip install platformio
+
+    - uses: ./.github/actions/setup-env   # common steps : cache + Python + PlatformIO
 
     - name: Debug PlatformIO
       run: |
         pio system info
         pio pkg list
 
-    
     - name: Build firmware variants
       run: |
         # recreate build dirs
-        mkdir -p builds/esp8266 builds/esp32
+        mkdir -p builds/esp8266
 
         echo "Building ESP8266 $lang variant..."
         pio run -e "lang_$lang"
 
-        echo "Building ESP32 $lang variant..."
-        pio run -e "lang_en_32"
-
         if [[ "${{ github.event_name }}" == "pull_request" ]]; then
           # Beta builds
           cp .pio/build/lang_$lang/firmware.bin builds/esp8266/firmware-esp8266-$lang-beta.bin
-          cp .pio/build/lang_en_32/firmware.bin builds/esp32/firmware-esp32-en-beta.bin
         else
           # Alfa builds
           cp .pio/build/lang_$lang/firmware.bin builds/esp8266/firmware-esp8266-$lang-alfa.bin
-          cp .pio/build/lang_en_32/firmware.bin builds/esp32/firmware-esp32-en-alfa.bin
-          cp .pio/build/lang_en_32/firmware.elf builds/esp32/firmware-esp32-en-alfa.elf
         fi
-    - name: Commit development builds
-      run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git add builds/
-        git commit -m "Update development builds" || echo "No changes to commit"
-        git push
-        
+
     - name: Create or Update Tag
       run: |
         git tag -f latest
-        git push origin latest --force
 
     - name: Fetch Tags
       run: git fetch --tags
@@ -91,21 +55,54 @@ jobs:
       uses: dev-drprasad/delete-tag-and-release@v0.2.1
       with:
         tag_name: latest
-        # delete_release: true 
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create Release
-      # if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
         tag_name: latest
         files: |
           builds/esp8266/firmware-esp8266-*.bin
-          builds/esp32/firmware-esp32-*.bin
-          builds/esp32/firmware-esp32-*.elf
         draft: false
         prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+
+  build-esp32-draft:
+    if: startsWith(github.ref, 'refs/heads/esp32/')
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: ./.github/actions/setup-env   # again same setup
+    - name: Build ESP32 firmware (draft)
+      run: |
+        mkdir -p builds/esp32
+        echo "Building ESP32 test firmware..."
+        pio run -e "lang_en_32"
+        cp .pio/build/lang_en_32/firmware.bin builds/esp32/firmware-esp32-test.bin
+        cp .pio/build/lang_en_32/firmware.elf builds/esp32/firmware-esp32-test.elf
+
+    - name: Delete old test release/tag
+      uses: dev-drprasad/delete-tag-and-release@v0.2.1
+      with:
+        tag_name: esp32_test
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create Draft Release for ESP32 test
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: esp32_test
+        name: "Non public, ESP32 version"
+        body: "Hidden as I can not test it."
+        files: |
+          builds/esp32/firmware-esp32-test.bin
+          builds/esp32/firmware-esp32-test.elf
+        draft: true
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
