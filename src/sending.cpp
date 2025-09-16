@@ -27,7 +27,7 @@ void configureCACertTrustAnchor(WiFiClientSecure* client) {
         client->setInsecure();
     }
     else {
-        client->setCACert(dst_root_ca_x3);
+        client->setCACert(dst_root_ca_x1);
     }
 }
 #endif
