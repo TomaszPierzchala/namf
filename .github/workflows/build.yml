@@ -51,6 +51,8 @@ jobs:
       run: |
         mkdir -p builds/esp8266
         mkdir -p builds/esp32
+        rm -f builds/esp8266/firmware-*
+        rm -f builds/esp32/firmware-*
 
         echo "Building ESP8266 $lang variant..."
         pio run -e "lang_$lang"
