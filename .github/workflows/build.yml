@@ -49,9 +49,6 @@ jobs:
     
     - name: Build firmware variants
       run: |
-        # remove old builds
-        rm -rf builds/esp8266 builds/esp32
-
         # recreate build dirs
         mkdir -p builds/esp8266 builds/esp32
 
@@ -89,6 +86,13 @@ jobs:
 
     - name: Debug github.ref
       run: echo "github.ref is ${{ github.ref }}"
+
+    - name: Delete old release/tag
+      uses: dev-drprasad/delete-tag-and-release@v0.2.1
+      with:
+        tag: latest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create Release
       # if: startsWith(github.ref, 'refs/tags/')
