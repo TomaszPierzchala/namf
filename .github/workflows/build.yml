@@ -45,11 +45,8 @@ jobs:
       run: |
         git tag -f latest
 
-    - name: Fetch Tags
-      run: git fetch --tags
-
     - name: Debug github.ref
-      run: echo "github.ref is ${{ github.ref }}"
+      run: echo "ESP8266 from ${{ github.ref }}"
 
     - name: Delete old release/tag
       uses: dev-drprasad/delete-tag-and-release@v0.2.1
@@ -86,7 +83,10 @@ jobs:
         cp .pio/build/lang_en_32/firmware.bin builds/esp32/firmware-esp32-test.bin
         cp .pio/build/lang_en_32/firmware.elf builds/esp32/firmware-esp32-test.elf
 
-    - name: Delete old test release/tag
+    - name: Debug github.ref
+      run: echo "ESP32 from ${{ github.ref }}"
+
+      - name: Delete old test release/tag
       uses: dev-drprasad/delete-tag-and-release@v0.2.1
       with:
         tag_name: esp32_test
