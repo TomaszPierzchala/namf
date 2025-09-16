@@ -4,6 +4,7 @@
 #include "variables.h"
 #include "helpers.h"
 #include "system/scheduler.h"
+#include <cstring>
 #include <LittleFS.h>
 
 extern const char UNIT_PERCENT[] PROGMEM = "%";
