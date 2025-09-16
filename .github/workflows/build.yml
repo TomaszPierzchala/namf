@@ -3,7 +3,6 @@ name: Build Firmware
 on:
   push:
     branches: 
-      - github
       - esp32/*
   pull_request:
     branches: [ github ]
@@ -62,6 +61,7 @@ jobs:
       with:
         tag_name: latest
         name: "The latest ESP8266 version"
+        body: "language: $lang\nonly bin version, no elf."
         files: |
           builds/esp8266/firmware-esp8266-*.bin
         draft: false
