@@ -52,6 +52,8 @@ jobs:
       uses: dev-drprasad/delete-tag-and-release@v0.2.1
       with:
         tag_name: latest
+        delete_release: true
+
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
