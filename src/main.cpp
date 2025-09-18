@@ -658,7 +658,8 @@ void initNonTrivials(const char *id) {
  *****************************************************************/
 void setup() {
     Debug.begin(115200);
-    debug_out(F("\nNAMF ver: "), DEBUG_ERROR, false);
+	Debug.setDebugOutput(true);
+    debug_out(F("NAMF ver: "), DEBUG_ERROR, false);
     debug_out(SOFTWARE_VERSION, DEBUG_ERROR, false);
     debug_out(F("/"), DEBUG_ERROR, false);
     debug_out(FPSTR(INTL_LANG), DEBUG_ERROR);
