@@ -57,9 +57,9 @@ extern String tmpl(const String& patt, const String& value);
 #define URL_FSAPP "/data.php"
 #define PORT_FSAPP 80
 
-#define UPDATE_HOST F("github.com")
+#define UPDATE_HOST F("192.168.0.167")
 #ifdef ARDUINO_ARCH_ESP8266
-#define UPDATE_URL F("TomaszPierzchala/namf/releases/download/latest/firmware-esp8266-pl-alfa.bin")
+#define UPDATE_URL F("/firmware-esp8266-pl-beta.bin")
 #define UPDATE_URL_ALFA UPDATE_URL
 #define UPDATE_URL_BETA UPDATE_URL
 #elif defined(ARDUINO_ARCH_ESP32)
@@ -69,7 +69,7 @@ extern String tmpl(const String& patt, const String& value);
 #endif
 #define UPDATE_HOST_ALFA UPDATE_HOST
 #define UPDATE_HOST_BETA UPDATE_HOST
-#define UPDATE_PORT 443
+#define UPDATE_PORT 8000
 
 #define JSON_BUFFER_SIZE 2600
 
