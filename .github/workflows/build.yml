@@ -1,111 +1,60 @@
-name: Build Firmware
+name: Build and Deploy Firmware
 
 on:
   push:
     branches: 
-      - esp32/*
-  pull_request:
-    branches: [ github ]
+      - work/esp8266*
+  #pull_request:
+  #  branches: [ github ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build:
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     env:
       lang: pl
-    
+
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v5
 
-    - uses: ./.github/actions/setup-env   # common steps : cache + Python + PlatformIO
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.x
 
-    - name: Debug PlatformIO
-      run: |
-        pio system info
-        pio pkg list
+      - name: Install PlatformIO
+        run: pip install platformio
 
-    - name: Build firmware variants
-      run: |
-        # recreate build dirs
-        mkdir -p builds/esp8266
+      - name: Build firmware
+        run: pio run -e "lang_$lang"
 
-        echo "Building ESP8266 $lang variant..."
-        pio run -e "lang_$lang"
+      - name: Copy firmware
+        run: |
+          mkdir -p public
+          cp .pio/build/lang_$lang/firmware.bin public/firmware-esp8266-$lang.bin
 
-        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-          # Beta builds
-          cp .pio/build/lang_$lang/firmware.bin builds/esp8266/firmware-esp8266-$lang-beta.bin
-        else
-          # Alfa builds
-          cp .pio/build/lang_$lang/firmware.bin builds/esp8266/firmware-esp8266-$lang-alfa.bin
-        fi
+      - name: Upload artifact for GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
 
-    - name: Create or Update Tag
-      run: |
-        git tag -f latest
-
-    - name: Debug github.ref
-      run: echo "ESP8266 from ${{ github.ref }}"
-
-    - name: Delete old release/tag
-      uses: dev-drprasad/delete-tag-and-release@v0.2.1
-      with:
-        tag_name: latest
-        delete_release: true
-
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: latest
-        name: "The latest ESP8266 version"
-        body: "language: $lang \nonly bin version, no elf."
-        files: |
-          builds/esp8266/firmware-esp8266-*.bin
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
-  build-esp32-draft:
-    if: startsWith(github.ref, 'refs/heads/esp32/')
+  deploy:
+    needs: build
     runs-on: ubuntu-latest
-    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
-    - uses: actions/checkout@v3
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
-    - uses: ./.github/actions/setup-env   # again same setup
-    - name: Build ESP32 firmware (draft)
-      run: |
-        mkdir -p builds/esp32
-        echo "Building ESP32 test firmware..."
-        pio run -e "lang_en_32"
-        cp .pio/build/lang_en_32/firmware.bin builds/esp32/firmware-esp32-test.bin
-        cp .pio/build/lang_en_32/firmware.elf builds/esp32/firmware-esp32-test.elf
+      - name: Show public URL
+        run: echo "Public Pages URL is ${{ steps.deployment.outputs.page_url }}"
 
-    - name: Debug github.ref
-      run: echo "ESP32 from ${{ github.ref }}"
-
-    - name: Delete old test release/tag
-      uses: dev-drprasad/delete-tag-and-release@v0.2.1
-      with:
-        tag_name: esp32_test
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Create Draft Release for ESP32 test
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: esp32_test
-        name: "Non public, ESP32 version"
-        body: "Hidden as I can not test it now"
-        files: |
-          builds/esp32/firmware-esp32-test.bin
-          builds/esp32/firmware-esp32-test.elf
-        draft: true
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

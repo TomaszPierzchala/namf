@@ -25,3 +25,4 @@ src/lang/bckps/*
 .vscode/*
 upload_config.ini
 dev_secrets.ini
+src/lang/intl_??.*h*

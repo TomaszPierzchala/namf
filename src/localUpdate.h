@@ -28,9 +28,48 @@ t_httpUpdate_return tryUpdate(const String host, const String port, const String
 #include <ESP8266httpUpdate.h>
 #include "helpers.h"
 t_httpUpdate_return tryUpdate(const String host, const String port, const String path, const String ver) {
-    WiFiClient client;
-    Serial.println(ver);
-    t_httpUpdate_return ret = ESPhttpUpdate.update(client, host, port.toInt(), path, ver);
+    debug_out(F(">>>>> HOST: "), DEBUG_MIN_INFO,false); debug_out(host, DEBUG_MIN_INFO,true);
+    debug_out(F(">>>>> PORT: "), DEBUG_MIN_INFO,false); debug_out(port, DEBUG_MIN_INFO,true);
+    debug_out(F(">>>>> PATH: "), DEBUG_MIN_INFO,false); debug_out(path, DEBUG_MIN_INFO,true);
+
+    WiFi.setSleepMode(WIFI_NONE_SLEEP);
+    // 1. same/one pointer for both clients
+    std::unique_ptr<WiFiClient> client;
+
+    // 2. choose the right client depending on the port
+    if (port == F("443")) {
+        debug_out(F(">>>>> PORT: "), DEBUG_MIN_INFO,false); debug_out(port, DEBUG_MIN_INFO,true);
+        auto httpsClient = new BearSSL::WiFiClientSecure();
+        httpsClient->setInsecure();   // DEV only, at the production stage the certificate should be verified
+        httpsClient->setBufferSizes(16384, 512);
+        client.reset(httpsClient);
+    } else {
+        debug_out(F(">>>>> ELSE PORT: "), DEBUG_MIN_INFO,false); debug_out(port, DEBUG_MIN_INFO,true);
+        client.reset(new WiFiClient());
+    }
+
+    Serial.println("Version: " + ver);
+    client->setTimeout(20000); // 20 seconds -> ..
+    ESPhttpUpdate.rebootOnUpdate(false); 
+    // t_httpUpdate_return ret = ESPhttpUpdate.update(*client, host, port.toInt(), path, ver);
+    
+    debug_out(F("Free heap: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getFreeHeap()), DEBUG_MIN_INFO,false);
+    debug_out(F(", MaxFreeBlock size: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getMaxFreeBlockSize()), DEBUG_MIN_INFO,true);
+    String firmwareUrl = String("http") + (true ? "s" : "") + "://" + host + path;
+    debug_out(F("Sprawdzam URL: "), DEBUG_MIN_INFO,false); debug_out(firmwareUrl, DEBUG_MIN_INFO,true);
+
+    debug_out(F("Free heap: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getFreeHeap()), DEBUG_MIN_INFO,false);
+    debug_out(F(", MaxFreeBlock size: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getMaxFreeBlockSize()), DEBUG_MIN_INFO,true);
+
+    t_httpUpdate_return ret = ESPhttpUpdate.update(*client, firmwareUrl);
+
+    debug_out(F("Free heap: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getFreeHeap()), DEBUG_MIN_INFO,false);
+    debug_out(F(", MaxFreeBlock size: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getMaxFreeBlockSize()), DEBUG_MIN_INFO,true);
+
+  
+    debug_out(F(">>>> Update return code: "), DEBUG_MIN_INFO,false); debug_out(String(ret), DEBUG_MIN_INFO,true);
+    debug_out(F(">>>> Last error: "), DEBUG_MIN_INFO,false); debug_out(String(ESPhttpUpdate.getLastError()), DEBUG_MIN_INFO,true);
+    debug_out(F(">>>> Error msg: "), DEBUG_MIN_INFO,false); debug_out(ESPhttpUpdate.getLastErrorString().c_str(), DEBUG_MIN_INFO,true);
     return ret;
 };
 #endif
@@ -38,6 +77,8 @@ t_httpUpdate_return tryUpdate(const String host, const String port, const String
 t_httpUpdate_return tryUpdate(String const ver) {
     String host;
     String url;
+    debug_out(F(">>>>> UPDATE CHANEL: "), DEBUG_MIN_INFO,false);
+    debug_out(String(cfg::update_channel), DEBUG_MIN_INFO,true);
     switch(cfg::update_channel) {
         case UPDATE_CHANNEL_ALFA:
             host = String(UPDATE_HOST_ALFA);

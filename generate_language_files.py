@@ -11,6 +11,10 @@ import pprint
 import filecmp
 import tempfile
 import argparse
+from typing import Any
+Import: Any
+
+Import("env")
 #
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", "--dry", help="Test run - display missing keys, not write any files", action="store_true")
@@ -21,9 +25,9 @@ print(sys.version)
 
 translations = {}
 keys_index = {}
-for filepath in glob.iglob(r'./src/lang/intl_*.h'):
+for filepath in glob.iglob(r'./src/lang/intl_*.lang'):
     name = os.path.basename(filepath)
-    m = re.search('_(\w\w).h', name)
+    m = re.search('_(\w\w).lang', name)
     lang = m.group(1)
     translations[lang] = {}
     locations = ('./src/sensors/**/*_{l}.lang', './src/lang/*_{l}.lang', './src/system/*_{l}.lang')
@@ -97,7 +101,7 @@ Files with .lang extension are searched in following directories and it's subdir
     os.close(f)
     final_file = "./src/lang/intl_{lang}.h".format(lang=lang)
     # if not args.test:   #dont write anything if test run
-    if not (filecmp.cmp(final_file, temp_file, shallow=True)):
+    if not os.path.exists(final_file) or not (filecmp.cmp(final_file, temp_file, shallow=True)):
         print('Changes detected, generating new {f}'.format(f=final_file))
         shutil.copy(temp_file, final_file)
     else:
