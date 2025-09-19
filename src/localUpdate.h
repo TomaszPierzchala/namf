@@ -41,7 +41,7 @@ t_httpUpdate_return tryUpdate(const String host, const String port, const String
         debug_out(F(">>>>> PORT: "), DEBUG_MIN_INFO,false); debug_out(port, DEBUG_MIN_INFO,true);
         auto httpsClient = new BearSSL::WiFiClientSecure();
         httpsClient->setInsecure();   // DEV only, at the production stage the certificate should be verified
-        httpsClient->setBufferSizes(1024, 512);
+        httpsClient->setBufferSizes(16384, 512);
         client.reset(httpsClient);
     } else {
         debug_out(F(">>>>> ELSE PORT: "), DEBUG_MIN_INFO,false); debug_out(port, DEBUG_MIN_INFO,true);
@@ -55,10 +55,7 @@ t_httpUpdate_return tryUpdate(const String host, const String port, const String
     
     debug_out(F("Free heap: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getFreeHeap()), DEBUG_MIN_INFO,false);
     debug_out(F(", MaxFreeBlock size: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getMaxFreeBlockSize()), DEBUG_MIN_INFO,true);
-    HTTPClient http;
-    http.begin(*client, host, port.toInt(), path, false);
-    http.setFollowRedirects(HTTPC_DISABLE_FOLLOW_REDIRECTS);
-    String firmwareUrl = String("http") + (true ? "s" : "") + "://" + host + ":" + String(port) + path;
+    String firmwareUrl = String("http") + (true ? "s" : "") + "://" + host + path;
     debug_out(F("Sprawdzam URL: "), DEBUG_MIN_INFO,false); debug_out(firmwareUrl, DEBUG_MIN_INFO,true);
 
     debug_out(F("Free heap: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getFreeHeap()), DEBUG_MIN_INFO,false);
@@ -69,7 +66,6 @@ t_httpUpdate_return tryUpdate(const String host, const String port, const String
     debug_out(F("Free heap: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getFreeHeap()), DEBUG_MIN_INFO,false);
     debug_out(F(", MaxFreeBlock size: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getMaxFreeBlockSize()), DEBUG_MIN_INFO,true);
 
-    http.end();// close here or before (test)
   
     debug_out(F(">>>> Update return code: "), DEBUG_MIN_INFO,false); debug_out(String(ret), DEBUG_MIN_INFO,true);
     debug_out(F(">>>> Last error: "), DEBUG_MIN_INFO,false); debug_out(String(ESPhttpUpdate.getLastError()), DEBUG_MIN_INFO,true);
