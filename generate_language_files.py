@@ -21,9 +21,9 @@ print(sys.version)
 
 translations = {}
 keys_index = {}
-for filepath in glob.iglob(r'./src/lang/intl_*.h'):
+for filepath in glob.iglob(r'./src/lang/intl_*.lang'):
     name = os.path.basename(filepath)
-    m = re.search('_(\w\w).h', name)
+    m = re.search('_(\w\w).lang', name)
     lang = m.group(1)
     translations[lang] = {}
     locations = ('./src/sensors/**/*_{l}.lang', './src/lang/*_{l}.lang', './src/system/*_{l}.lang')
