@@ -14,11 +14,7 @@ import argparse
 from typing import Any
 Import: Any
 
-try:
-    Import("env")  # dostępne tylko gdy uruchamia PlatformIO
-except Exception:
-    env = None     # gdy uruchamiasz ręcznie, Import nie istnieje
-
+Import("env")
 #
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", "--dry", help="Test run - display missing keys, not write any files", action="store_true")
