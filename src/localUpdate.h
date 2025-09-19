@@ -41,7 +41,7 @@ t_httpUpdate_return tryUpdate(const String host, const String port, const String
         debug_out(F(">>>>> PORT: "), DEBUG_MIN_INFO,false); debug_out(port, DEBUG_MIN_INFO,true);
         auto httpsClient = new BearSSL::WiFiClientSecure();
         httpsClient->setInsecure();   // DEV only, at the production stage the certificate should be verified
-        httpsClient->setBufferSizes(8192, 512);
+        httpsClient->setBufferSizes(1024, 512);
         client.reset(httpsClient);
     } else {
         debug_out(F(">>>>> ELSE PORT: "), DEBUG_MIN_INFO,false); debug_out(port, DEBUG_MIN_INFO,true);
@@ -49,28 +49,37 @@ t_httpUpdate_return tryUpdate(const String host, const String port, const String
     }
 
     Serial.println("Version: " + ver);
-    client->setTimeout(90000); // 20 seconds -> ..
+    client->setTimeout(20000); // 20 seconds -> ..
     ESPhttpUpdate.rebootOnUpdate(false); 
     // t_httpUpdate_return ret = ESPhttpUpdate.update(*client, host, port.toInt(), path, ver);
     
-    debug_out(F("Free heap: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getFreeHeap()), DEBUG_MIN_INFO,true);
+    debug_out(F("Free heap: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getFreeHeap()), DEBUG_MIN_INFO,false);
+    debug_out(F(", MaxFreeBlock size: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getMaxFreeBlockSize()), DEBUG_MIN_INFO,true);
     HTTPClient http;
     http.begin(*client, host, port.toInt(), path, false);
+    http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
     // http.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
     String firmwareUrl = String("http") + (true ? "s" : "") + "://" + host + ":" + String(port) + path;
     // Serial.printf("Sprawdzam URL: %s\n", firmwareUrl);
     debug_out(F("Sprawdzam URL: "), DEBUG_MIN_INFO,false); debug_out(firmwareUrl, DEBUG_MIN_INFO,true);
 
+    debug_out(F("Free heap: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getFreeHeap()), DEBUG_MIN_INFO,false);
+    debug_out(F(", MaxFreeBlock size: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getMaxFreeBlockSize()), DEBUG_MIN_INFO,true);
+
     t_httpUpdate_return ret;
     int httpCode = http.GET();
+    String newUrl = http.getLocation();//("Location");
+    http.end(); // relese RAM of ESP8266
+    // delay(500);
+
+    debug_out(F("Free heap: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getFreeHeap()), DEBUG_MIN_INFO,false);
+    debug_out(F(", MaxFreeBlock size: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getMaxFreeBlockSize()), DEBUG_MIN_INFO,true);
 
     debug_out(F("Kod HTTP: "), DEBUG_MIN_INFO,false); debug_out(String(httpCode), DEBUG_MIN_INFO,true);
     if (httpCode == HTTP_CODE_FOUND || httpCode == HTTP_CODE_MOVED_PERMANENTLY || httpCode == HTTP_CODE_SEE_OTHER) {
-      // pobierz nagłówek Location
-      String newUrl = http.getLocation();//("Location");
       debug_out(F("Redirect → "), DEBUG_MIN_INFO,false); debug_out(newUrl.c_str(), DEBUG_MIN_INFO,true);
 
-      if (!client) {
+      if (static_cast<BearSSL::WiFiClientSecure*>(client.get()) == nullptr) {
         // Serial.println("Błąd: client NULL!");
         debug_out(F("Błąd: client NULL"), DEBUG_MIN_INFO, true);
       }
@@ -96,8 +105,9 @@ t_httpUpdate_return tryUpdate(const String host, const String port, const String
           break;
       }
     } else if (httpCode == HTTP_CODE_OK) {
-        debug_out(F("URL daje 200 OK — można update bezpośrednio"), DEBUG_MIN_INFO, true);
-      ret = ESPhttpUpdate.update(*client, firmwareUrl);
+        debug_out(F("URL daje 200 OK — można update bezpośrednio - client:"), DEBUG_MIN_INFO, true);
+        // debug_out(String(client.get()), DEBUG_MIN_INFO, true);
+        ret = ESPhttpUpdate.update(*client, firmwareUrl);
       // obsługa jak wyżej
     } else {
         debug_out(F("Nieoczekiwany kod HTTP: "), DEBUG_MIN_INFO,false); debug_out(String(httpCode), DEBUG_MIN_INFO,true);
