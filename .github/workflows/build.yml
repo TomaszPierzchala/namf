@@ -3,7 +3,7 @@ name: Build and Deploy Firmware
 on:
   push:
     branches: 
-      - esp8266/*
+      - work/esp8266*
   #pull_request:
   #  branches: [ github ]
 
