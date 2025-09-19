@@ -33,9 +33,23 @@ jobs:
           mkdir -p public
           cp .pio/build/lang_$lang/firmware.bin public/firmware-esp8266-$lang.bin
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload artifact for GitHub Pages
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          force_orphan: true 
+          path: ./public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Show public URL
+        run: echo "Public Pages URL is ${{ steps.deployment.outputs.page_url }}"
+
