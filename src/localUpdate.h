@@ -57,73 +57,23 @@ t_httpUpdate_return tryUpdate(const String host, const String port, const String
     debug_out(F(", MaxFreeBlock size: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getMaxFreeBlockSize()), DEBUG_MIN_INFO,true);
     HTTPClient http;
     http.begin(*client, host, port.toInt(), path, false);
-    http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
-    // http.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
+    http.setFollowRedirects(HTTPC_DISABLE_FOLLOW_REDIRECTS);
     String firmwareUrl = String("http") + (true ? "s" : "") + "://" + host + ":" + String(port) + path;
-    // Serial.printf("Sprawdzam URL: %s\n", firmwareUrl);
     debug_out(F("Sprawdzam URL: "), DEBUG_MIN_INFO,false); debug_out(firmwareUrl, DEBUG_MIN_INFO,true);
 
     debug_out(F("Free heap: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getFreeHeap()), DEBUG_MIN_INFO,false);
     debug_out(F(", MaxFreeBlock size: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getMaxFreeBlockSize()), DEBUG_MIN_INFO,true);
 
-    t_httpUpdate_return ret;
-    int httpCode = http.GET();
-    String newUrl = http.getLocation();//("Location");
-    http.end(); // relese RAM of ESP8266
-    // delay(500);
+    t_httpUpdate_return ret = ESPhttpUpdate.update(*client, firmwareUrl);
 
     debug_out(F("Free heap: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getFreeHeap()), DEBUG_MIN_INFO,false);
     debug_out(F(", MaxFreeBlock size: "), DEBUG_MIN_INFO,false); debug_out(String(ESP.getMaxFreeBlockSize()), DEBUG_MIN_INFO,true);
 
-    debug_out(F("Kod HTTP: "), DEBUG_MIN_INFO,false); debug_out(String(httpCode), DEBUG_MIN_INFO,true);
-    if (httpCode == HTTP_CODE_FOUND || httpCode == HTTP_CODE_MOVED_PERMANENTLY || httpCode == HTTP_CODE_SEE_OTHER) {
-      debug_out(F("Redirect → "), DEBUG_MIN_INFO,false); debug_out(newUrl.c_str(), DEBUG_MIN_INFO,true);
-
-      if (static_cast<BearSSL::WiFiClientSecure*>(client.get()) == nullptr) {
-        // Serial.println("Błąd: client NULL!");
-        debug_out(F("Błąd: client NULL"), DEBUG_MIN_INFO, true);
-      }
-        if (newUrl.length() == 0) {
-            debug_out(F("Błąd: pusty URL"), DEBUG_MIN_INFO, true);
-        }
-      // teraz robimy update z nowym URL
-      ret = ESPhttpUpdate.update(*client, newUrl);
-
-      switch (ret) {
-        case HTTP_UPDATE_FAILED:
-            debug_out(F("Update FAIL. Err : ("), DEBUG_MIN_INFO,false); debug_out(String(ESPhttpUpdate.getLastError()), DEBUG_MIN_INFO,false);
-            debug_out(F("): "), DEBUG_MIN_INFO,false); debug_out(ESPhttpUpdate.getLastErrorString().c_str(), DEBUG_MIN_INFO,true);
-          break;
-
-        case HTTP_UPDATE_NO_UPDATES:
-          debug_out(F("Brak aktualizacji."), DEBUG_MIN_INFO, true);
-          break;
-
-        case HTTP_UPDATE_OK:
-          debug_out(F("Update OK, reboot!"), DEBUG_MIN_INFO, true);
-          ESP.restart();
-          break;
-      }
-    } else if (httpCode == HTTP_CODE_OK) {
-        debug_out(F("URL daje 200 OK — można update bezpośrednio - client:"), DEBUG_MIN_INFO, true);
-        // debug_out(String(client.get()), DEBUG_MIN_INFO, true);
-        ret = ESPhttpUpdate.update(*client, firmwareUrl);
-      // obsługa jak wyżej
-    } else {
-        debug_out(F("Nieoczekiwany kod HTTP: "), DEBUG_MIN_INFO,false); debug_out(String(httpCode), DEBUG_MIN_INFO,true);
-    }
-    http.end();
+    http.end();// close here or before (test)
   
-
-
-    // return handleUpdate(http, ver, false);
-    // t_httpUpdate_return ret = ESPhttpUpdate.update(http, ver); // <<<<<
-          // wyłącz auto-reboot
-// auto ret = ESPhttpUpdate.update(client, url, currentVersion);
-    debug_out(F("Update return code: "), DEBUG_MIN_INFO,false); debug_out(String(ret), DEBUG_MIN_INFO,true);
-    debug_out(F("Last error: "), DEBUG_MIN_INFO,false); debug_out(String(ESPhttpUpdate.getLastError()), DEBUG_MIN_INFO,true);
-    debug_out(F("Error msg: "), DEBUG_MIN_INFO,false); debug_out(ESPhttpUpdate.getLastErrorString().c_str(), DEBUG_MIN_INFO,true);
-    debug_out(F(">>>>> UPDATE result: "), DEBUG_MIN_INFO,false); debug_out(String(ret), DEBUG_MIN_INFO,true);
+    debug_out(F(">>>> Update return code: "), DEBUG_MIN_INFO,false); debug_out(String(ret), DEBUG_MIN_INFO,true);
+    debug_out(F(">>>> Last error: "), DEBUG_MIN_INFO,false); debug_out(String(ESPhttpUpdate.getLastError()), DEBUG_MIN_INFO,true);
+    debug_out(F(">>>> Error msg: "), DEBUG_MIN_INFO,false); debug_out(ESPhttpUpdate.getLastErrorString().c_str(), DEBUG_MIN_INFO,true);
     return ret;
 };
 #endif
