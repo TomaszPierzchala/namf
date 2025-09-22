@@ -9,6 +9,18 @@
 #include "variables.h"
 #include "helpers.h"
 #include "sensors/sds011/sds011.h"
+#include "ca-helper.h"
+#include "ca-root.h"
+#include "github_root-ca.h"
+
+#if defined(ARDUINO_ARCH_ESP8266)
+BearSSL::X509List x509_comodo_ca_root(comodo_root_ca);
+BearSSL::X509List *ptr_x509_comodo_ca_root = &x509_comodo_ca_root;
+const char *comodo_ca_root = nullptr;
+#else
+BearSSL::X509List *ptr_x509_comodo_ca_root = nullptr;
+const char *comodo_ca_root PROGMEM = comodo_root_ca; 
+#endif
 
 #ifdef ARDUINO_ARCH_ESP32
 #include <WiFi.h> /// FOR ESP32
@@ -40,7 +52,7 @@ t_httpUpdate_return tryUpdate(const String host, const String port, const String
     if (port == F("443")) {
         debug_out(F(">>>>> PORT: "), DEBUG_MIN_INFO,false); debug_out(port, DEBUG_MIN_INFO,true);
         auto httpsClient = new BearSSL::WiFiClientSecure();
-        httpsClient->setInsecure();   // DEV only, at the production stage the certificate should be verified
+        configureCACertTrustAnchor(httpsClient, ptr_x509_comodo_ca_root, comodo_ca_root);
         httpsClient->setBufferSizes(16384, 512);
         client.reset(httpsClient);
     } else {

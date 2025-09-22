@@ -21,7 +21,6 @@
 
 #if defined(ESP8266)
 #include <ESP8266WiFi.h>
-extern void configureCACertTrustAnchor(WiFiClientSecure* client);
 #else
 #include <WiFi.h>
 #endif

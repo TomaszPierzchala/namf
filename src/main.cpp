@@ -652,6 +652,7 @@ void initNonTrivials(const char *id) {
 
 #include "arch_dependend/factory_reset.h"
 //check if factory reset conditions are met
+#if defined(ESP8266)
 extern "C" {
   #include "user_interface.h"
 }
@@ -667,8 +668,11 @@ void printOtaInfo() {
   debug_out(F("Sketch size: "), DEBUG_MIN_INFO, 0); debug_out(String(ESP.getSketchSize()), DEBUG_MIN_INFO, 0); debug_out(F(", Free sketch space: "), DEBUG_MIN_INFO,0);debug_out(String(ESP.getFreeSketchSpace()), DEBUG_MIN_INFO, 0);
   
   debug_out(F("Sketch MD5: "), DEBUG_MIN_INFO, 0); debug_out(ESP.getSketchMD5().c_str(), DEBUG_MIN_INFO, 1);
+
+  debug_out(F("Flash chip size (real): "), DEBUG_MIN_INFO, 0); debug_out(String(ESP.getFlashChipRealSize()), DEBUG_MIN_INFO, 1);
+  debug_out(F("Flash chip size (SDK): "), DEBUG_MIN_INFO, 0); debug_out(String(ESP.getFlashChipSize()), DEBUG_MIN_INFO, 1);
+
   /*
-  // mapa rozmiaru flash (dla diagnostyki)
   debug_out(F("Flash size map (SDK): "), DEBUG_MIN_INFO, 0); debug_out(String(system_get_flash_size_map()), DEBUG_MIN_INFO, 1);
 
   Serial.printf(">> OTA slot: %s (%u)\n", slot, which);
@@ -676,20 +680,20 @@ void printOtaInfo() {
                 ESP.getSketchSize(), ESP.getFreeSketchSpace());
   Serial.printf("Sketch MD5: %s\n", ESP.getSketchMD5().c_str());
 
-  // mapa rozmiaru flash (dla diagnostyki)
   Serial.printf("Flash size map (SDK): %u\n", system_get_flash_size_map());
 */
 }
+#endif
 /*****************************************************************
  * The Setup                                                     *
  *****************************************************************/
 void setup() {
     Debug.begin(115200);
-	// delay(50);
-	// Serial.begin(115200);   // prędkość monitora
-    delay(200);             // chwila na otwarcie portu
-    // Serial.println("Hello, mam logi!");
+    delay(1000); // wait for serial to init
+    // Serial.println("Hello, it works!");
+#if defined(ESP8266)
   	printOtaInfo();
+#endif
 	
 	// Debug.setDebugOutput(true);
     debug_out(F("NAMF ver: "), DEBUG_ERROR, false);
