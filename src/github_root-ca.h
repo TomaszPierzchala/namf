@@ -1,5 +1,4 @@
 #pragma once
-#include <pgmspace.h>
 // Certificat:
 // CA root of *..github.io : O=Comodo CA Limited, CN=AAA Certificate Services - Valid Until : Dec 31 23:59:59 2028 GMT
 static const char comodo_root_ca[] PROGMEM = R"EOF(
