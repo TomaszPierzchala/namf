@@ -1,5 +1,7 @@
 #pragma once
 #include <WiFiClientSecure.h>
-extern void configureCACertTrustAnchor(WiFiClientSecure* client, 
-                                      BearSSL::X509List* x509_ca_root = nullptr, 
-                                      const char* ca_root = nullptr);
+#if defined(ARDUINO_ARCH_ESP8266)
+extern void configureCACertTrustAnchor(WiFiClientSecure* client, BearSSL::X509List* x509_ca_root = nullptr);
+#else
+extern void configureCACertTrustAnchor(WiFiClientSecure* client, const char* ca_root = nullptr);
+#endif

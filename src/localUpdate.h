@@ -45,7 +45,7 @@ t_httpUpdate_return tryUpdate(const String host, const String port, const String
         debug_out(F(">>>>> PORT: "), DEBUG_MIN_INFO,false); debug_out(port, DEBUG_MIN_INFO,true);
         auto httpsClient = new BearSSL::WiFiClientSecure();
         smPtr_x509_comodo_ca_root = std::make_unique<BearSSL::X509List>(comodo_root_ca);
-        configureCACertTrustAnchor(httpsClient, smPtr_x509_comodo_ca_root.get(), nullptr);
+        configureCACertTrustAnchor(httpsClient, smPtr_x509_comodo_ca_root.get());
         httpsClient->setBufferSizes(16384, 512);
         client.reset(httpsClient);
     } else {

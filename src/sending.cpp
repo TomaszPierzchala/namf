@@ -7,7 +7,9 @@
  *****************************************************************/
 int sendData(const LoggerEntry logger, const String &data, const int pin, const String &host, const int httpPort, const String &url, const bool verify) {
     WiFiClient *client;
+#if defined(ARDUINO_ARCH_ESP8266)
     std::unique_ptr<BearSSL::X509List> smPtr_xptr_x509_dst_ca_root;
+#endif
     const __FlashStringHelper *contentType;
     bool ssl = false;
     if (httpPort == 443) {
@@ -15,14 +17,12 @@ int sendData(const LoggerEntry logger, const String &data, const int pin, const 
         ssl = true;
 #if defined(ARDUINO_ARCH_ESP8266)
         smPtr_xptr_x509_dst_ca_root = std::make_unique<BearSSL::X509List>(dst_root_ca_x1);
-        const char *dst_ca_root = nullptr;
         static_cast<WiFiClientSecure *>(client)->setBufferSizes(1024, TCP_MSS > 1024 ? 2048 : 1024);
+        configureCACertTrustAnchor(static_cast<WiFiClientSecure *>(client), smPtr_xptr_x509_dst_ca_root.get());
 #else
-        std::unique_ptr<BearSSL::X509List> smPtr_xptr_x509_dst_ca_root;
-        const char *dst_ca_root PROGMEM = dst_root_ca_x1; 
+        const char *dst_ca_root PROGMEM = dst_root_ca_x1;
+        configureCACertTrustAnchor(static_cast<WiFiClientSecure *>(client), dst_ca_root);
 #endif
-        configureCACertTrustAnchor(static_cast<WiFiClientSecure *>(client),
-                                   smPtr_xptr_x509_dst_ca_root.get(), dst_ca_root);
     } else {
         client = new WiFiClient;
     }
