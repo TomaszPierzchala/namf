@@ -9,6 +9,9 @@
 #include "variables.h"
 #include "helpers.h"
 #include "sensors/sds011/sds011.h"
+#include "ca-helper.h"
+#include "ca-root.h"
+#include "github_root-ca.h"
 
 #ifdef ARDUINO_ARCH_ESP32
 #include <WiFi.h> /// FOR ESP32
@@ -35,12 +38,14 @@ t_httpUpdate_return tryUpdate(const String host, const String port, const String
     WiFi.setSleepMode(WIFI_NONE_SLEEP);
     // 1. same/one pointer for both clients
     std::unique_ptr<WiFiClient> client;
+    std::unique_ptr<BearSSL::X509List> smPtr_x509_comodo_ca_root;
 
     // 2. choose the right client depending on the port
     if (port == F("443")) {
         debug_out(F(">>>>> PORT: "), DEBUG_MIN_INFO,false); debug_out(port, DEBUG_MIN_INFO,true);
         auto httpsClient = new BearSSL::WiFiClientSecure();
-        httpsClient->setInsecure();   // DEV only, at the production stage the certificate should be verified
+        smPtr_x509_comodo_ca_root = std::make_unique<BearSSL::X509List>(comodo_root_ca);
+        configureCACertTrustAnchor(httpsClient, smPtr_x509_comodo_ca_root.get());
         httpsClient->setBufferSizes(16384, 512);
         client.reset(httpsClient);
     } else {

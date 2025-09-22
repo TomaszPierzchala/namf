@@ -1,50 +1,27 @@
 #include "sending.h"
-
-#if defined(ARDUINO_ARCH_ESP8266)
-BearSSL::X509List x509_dst_root_ca(dst_root_ca_x1);
-
-void configureCACertTrustAnchor(WiFiClientSecure* client) {
-    constexpr time_t fw_built_year = (__DATE__[ 7] - '0') * 1000 + \
-							  (__DATE__[ 8] - '0') *  100 + \
-							  (__DATE__[ 9] - '0') *   10 + \
-							  (__DATE__[10] - '0');
-    if (time(nullptr) < (fw_built_year - 1970) * 365 * 24 * 3600) {
-        debug_out(F("Time incorrect; Disabling CA verification."), DEBUG_MIN_INFO,1);
-        client->setInsecure();
-    }
-    else {
-        client->setTrustAnchors(&x509_dst_root_ca);
-    }
-}
-#else
-void configureCACertTrustAnchor(WiFiClientSecure* client) {
-    constexpr time_t fw_built_year = (__DATE__[ 7] - '0') * 1000 + \
-							  (__DATE__[ 8] - '0') *  100 + \
-							  (__DATE__[ 9] - '0') *   10 + \
-							  (__DATE__[10] - '0');
-    if (time(nullptr) < (fw_built_year - 1970) * 365 * 24 * 3600) {
-        debug_out(F("Time incorrect; Disabling CA verification."), DEBUG_MIN_INFO,1);
-        client->setInsecure();
-    }
-    else {
-        client->setCACert(dst_root_ca_x1);
-    }
-}
-#endif
+#include "ca-helper.h"
+#include "ca-root.h"
 
 /*****************************************************************
  * send data to rest api                                         *
  *****************************************************************/
 int sendData(const LoggerEntry logger, const String &data, const int pin, const String &host, const int httpPort, const String &url, const bool verify) {
     WiFiClient *client;
+#if defined(ARDUINO_ARCH_ESP8266)
+    std::unique_ptr<BearSSL::X509List> smPtr_xptr_x509_dst_ca_root;
+#endif
     const __FlashStringHelper *contentType;
     bool ssl = false;
     if (httpPort == 443) {
         client = new WiFiClientSecure;
         ssl = true;
-        configureCACertTrustAnchor(static_cast<WiFiClientSecure *>(client));
-#ifdef ARDUINO_ARCH_ESP8266
+#if defined(ARDUINO_ARCH_ESP8266)
+        smPtr_xptr_x509_dst_ca_root = std::make_unique<BearSSL::X509List>(dst_root_ca_x1);
         static_cast<WiFiClientSecure *>(client)->setBufferSizes(1024, TCP_MSS > 1024 ? 2048 : 1024);
+        configureCACertTrustAnchor(static_cast<WiFiClientSecure *>(client), smPtr_xptr_x509_dst_ca_root.get());
+#else
+        const char *dst_ca_root PROGMEM = dst_root_ca_x1;
+        configureCACertTrustAnchor(static_cast<WiFiClientSecure *>(client), dst_ca_root);
 #endif
     } else {
         client = new WiFiClient;

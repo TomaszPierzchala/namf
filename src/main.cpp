@@ -652,12 +652,49 @@ void initNonTrivials(const char *id) {
 
 #include "arch_dependend/factory_reset.h"
 //check if factory reset conditions are met
+#if defined(ESP8266)
+extern "C" {
+  #include "user_interface.h"
+}
 
+void printOtaInfo() {
+  uint8_t which = system_upgrade_userbin_check(); // 0 lub 1
+  const char* slot =
+      (which == UPGRADE_FW_BIN1) ? "user1" :
+      (which == UPGRADE_FW_BIN2) ? "user2" : "unknown";
+
+
+  debug_out(F(">> OTA slot: "), DEBUG_MIN_INFO, 0); debug_out(slot, DEBUG_MIN_INFO, 0); debug_out(F(" "), DEBUG_MIN_INFO,0);debug_out(String(which), DEBUG_MIN_INFO, 0);
+  debug_out(F("Sketch size: "), DEBUG_MIN_INFO, 0); debug_out(String(ESP.getSketchSize()), DEBUG_MIN_INFO, 0); debug_out(F(", Free sketch space: "), DEBUG_MIN_INFO,0);debug_out(String(ESP.getFreeSketchSpace()), DEBUG_MIN_INFO, 0);
+  
+  debug_out(F("Sketch MD5: "), DEBUG_MIN_INFO, 0); debug_out(ESP.getSketchMD5().c_str(), DEBUG_MIN_INFO, 1);
+
+  debug_out(F("Flash chip size (real): "), DEBUG_MIN_INFO, 0); debug_out(String(ESP.getFlashChipRealSize()), DEBUG_MIN_INFO, 1);
+  debug_out(F("Flash chip size (SDK): "), DEBUG_MIN_INFO, 0); debug_out(String(ESP.getFlashChipSize()), DEBUG_MIN_INFO, 1);
+
+  /*
+  debug_out(F("Flash size map (SDK): "), DEBUG_MIN_INFO, 0); debug_out(String(system_get_flash_size_map()), DEBUG_MIN_INFO, 1);
+
+  Serial.printf(">> OTA slot: %s (%u)\n", slot, which);
+  Serial.printf("Sketch size: %u, Free sketch space: %u\n",
+                ESP.getSketchSize(), ESP.getFreeSketchSpace());
+  Serial.printf("Sketch MD5: %s\n", ESP.getSketchMD5().c_str());
+
+  Serial.printf("Flash size map (SDK): %u\n", system_get_flash_size_map());
+*/
+}
+#endif
 /*****************************************************************
  * The Setup                                                     *
  *****************************************************************/
 void setup() {
     Debug.begin(115200);
+    delay(1000); // wait for serial to init
+    // Serial.println("Hello, it works!");
+#if defined(ESP8266)
+  	printOtaInfo();
+#endif
+	
 	// Debug.setDebugOutput(true);
     debug_out(F("NAMF ver: "), DEBUG_ERROR, false);
     debug_out(SOFTWARE_VERSION, DEBUG_ERROR, false);

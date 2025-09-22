@@ -1,3 +1,6 @@
+#pragma once
+// Certificat:
+// 1st CA root of send API : ISRG Root X1 (project Let’s Encrypt) - Valid Until : Jun  4 11:04:38 2035 GMT
 static const char dst_root_ca_x1[] PROGMEM = R"EOF(
 -----BEGIN CERTIFICATE-----
 MIIFazCCA1OgAwIBAgIRAIIQz7DSQONZRGPgu2OCiwAwDQYJKoZIhvcNAQELBQAw
