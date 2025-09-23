@@ -1,11 +1,11 @@
 name: Build and Deploy Firmware
 
 on:
-  push:
-    branches: 
-      - work/esp8266*
-  #pull_request:
-  #  branches: [ github ]
+  #push:
+   # branches: 
+    #  - work/esp8266*
+  pull_request:
+    branches: [ github ]
 
 permissions:
   contents: read
