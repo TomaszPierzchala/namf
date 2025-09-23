@@ -7,9 +7,9 @@ It is the code for the microcontroller Wemosa D1 mini PRO ![Wemosa D1 mini PRO](
 ## List of main differences
 It can be easily checked with:
 ```bash
-$ git diff based_on
+$ git diff NAMF-2020-46a
 ```
-- automatic build on GitHub
+- automatic build at GitHub Pages
     available at https://tomaszpierzchala.github.io/namf/firmware-esp8266-pl.bin
 - Update Over The Air 
     - from mentioned above secured page
@@ -26,12 +26,10 @@ $ git diff based_on
 
 - src/lang/intl_\*.**h** removed from repo as their are created from intl_\*.lang files
 - removed warnings for any _default_envs_ builds
-    - I removed the ambiguity in the selection of the `sensirion_hw_i2c_implementation.cpp` library method `Wire.requestFrom((int) address, (int) count);` with help of `fix_wire.py` 
-        
-    _**TODO** need to change it - variable cast in our code (src/), not in the library - it's strange that I only figured it out now ;-)_
+    - I removed the ambiguity in the selection of the `sensirion_hw_i2c_implementation.cpp` library method forcing (int) cast `Wire.requestFrom((int) address, (int) count);` with help of `fix_wire.py`
 - updates in PlatormIO file (`platformio.ini`)
 - other
-    - Due to the overlap of file names on Mac OS when they differ only in letter case, I changed the ambiguous names by adding the prefix `local` at src/:
+    - Due to the overlap of file names on Mac OS when they differ only in letter case, I changed the ambiguous names by adding the prefix `local` at `src/`:
         - update.h -> localUpdate.h
         - wbserver.cpp -> localWebserver.cpp
         - webserver.h -> localWebserver.h
