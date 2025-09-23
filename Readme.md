@@ -1,47 +1,39 @@
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/nettigo/namf) ![GitHub](https://img.shields.io/github/license/nettigo/namf) ![Hardware](https://img.shields.io/badge/hardware%20license-TAPR-orange) ![GitHub issues](https://img.shields.io/github/issues/nettigo/namf)
+# About
+This project is a modification of the [NAMF's code](https://github.com/nettigo/namf), see [the original README](OldReadme.md).
 
-# Nettigo Air Monitor Firmware
+It is the code for the microcontroller Wemosa D1 mini PRO ![Wemosa D1 mini PRO](assets/images/Wemosa_D1_mini_PRO.jpg) that controls 
+[Nettigo Air Monitor](https://nettigo.eu/products/nettigo-air-monitor-kit-bme-0-3-3-pro-language-en-build-your-own-smog-sensor) which consit of the NovaFitness SDS011 particulate matter sensors and the Bosch BME280 pressure, humidity, and temperature sensors.
 
-NAMF is a firmware for [Nettigo Air Monitor Sensor](https://nettigo.eu/products/tagged/NAM) - a modular platform for measuring air quality. Hardware is OSHWA Certified with [UID PL000001](https://certification.oshwa.org/pl000001.html).
+## List of main differences
+It can be easily checked with:
+```bash
+$ git diff based_on
+```
+- automatic build on GitHub
+    available at https://tomaszpierzchala.github.io/namf/firmware-esp8266-pl.bin
+- Update Over The Air 
+    - from mentioned above secured page
+- security changes
+    - Password of WiFi access point (AP) should be at least MIN_PASSWD_LENGTH characters long, as it is the only Security Protection while conecting to AP - no more password saved in the repo. 
+    - AP password, can be localy set in not commited auxiliary file `dev_secrets.ini` like :\
+    \
+    [common]\
+    build_flags =\
+        -D**WIFI_SSID**=\\"Local Wifi Router SSID/Name - predefined\\"\
+        -D**WIFI_PASS**=\\"Local Wifi Router Password - predefined\\"\
+        -D**AP_NAME**=\\"Access Point Name\\"\
+        -D**AP_PASSWORD_MAX64_LONG**=\\"Access Point Password\\"
 
-NAM Sensor features WiFi connectivity provided by ESP8266 (and ESP32 in future). It's build around Nova Fitness SDS011 PM sensor. Device has a build-in PTC heater with control circuitry for air conditioning in a high humidity environment (to avoid counting water vapor as dust).
-
-### Changelog
-
-The code base has roots in [Luftdaten.info firmware](https://github.com/opendata-stuttgart/sensors-software/). We aim to rewrite the code to make it modular, easier to modify and extend in future. 
-
-Detailed changelog is in [Versions](Versions.md).
-
-To build this project You need Platformio installed with python 3.
-
-### Firmware web interface
-
-* / - main menu
-* Data related:
-  * /values - current measured values (page always available)
-  * /status - sensor status and debug info
-  * /data.json - measured values in JSON format (this is snapshot of last data set sent to APIs not current values as shown on /values page)
-  * /metrics - measured values in Prometheus format
-* Configuration related:
-  * /config - configuration
-  * /simple_config - interface for new scheduler subsystems configuration  
-  * /removeConfig - remove configuration files
-  * /config.json - current configure file in JSON format
-  * /configSave.json - form for pasting configuration file
-  * /rollback - rollback firmware to some older version
-  * /wifi - list of wifi networks (active only in AP mode)
-* /stack_dump - show stack dump from last exception with timestamp, FW version, language and MD5 sum of image  
-* /reset - sensor reboot
-* /ota - enable OTA firmware update for 60 seconds. Will work only if admin password is set and enabled
-* /debug?lvl=x - sets debug serial messages info level to x:
-  * 0 - no debug
-  * 1 - errors
-  * 2 - errors & warnings
-  * 3 - errors, warnings & min. info
-  * 4 - errors, warnings, min. info & med. info
-  * 5 - all debug messages
-* /images - serving images - used for the NAM logo 
-
-## For developers and interested in
-
-In [Details](Details.md) You can find a bit more info about NAMF internals.
+- src/lang/intl_\*.**h** removed from repo as their are created from intl_\*.lang files
+- removed warnings for any _default_envs_ builds
+    - I removed the ambiguity in the selection of the `sensirion_hw_i2c_implementation.cpp` library method `Wire.requestFrom((int) address, (int) count);` with help of `fix_wire.py` 
+        
+    _**TODO** need to change it - variable cast in our code (src/), not in the library - it's strange that I only figured it out now ;-)_
+- updates in PlatormIO file (`platformio.ini`)
+- other
+    - Due to the overlap of file names on Mac OS when they differ only in letter case, I changed the ambiguous names by adding the prefix `local` at src/:
+        - update.h -> localUpdate.h
+        - wbserver.cpp -> localWebserver.cpp
+        - webserver.h -> localWebserver.h
+        - wifi.cpp -> localWifi.cpp
+        - wifi.h -> localWifi.h
