@@ -35,3 +35,7 @@ $ git diff NAMF-2020-46a
         - webserver.h -> localWebserver.h
         - wifi.cpp -> localWifi.cpp
         - wifi.h -> localWifi.h
+
+## Acknowledgments
+Special thanks to [ChatGPT](https://chat.openai.com/) for helping me debug and improve the ESP8266 C++ code 🚀  
+Thank you as well for the valuable, intelligent, and educational conversations – and for the patience along the way 😉
