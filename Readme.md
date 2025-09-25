@@ -29,7 +29,8 @@ $ git diff NAMF-2020-46a
     - I removed the ambiguity in the selection of the `sensirion_hw_i2c_implementation.cpp` library method forcing (int) cast `Wire.requestFrom((int) address, (int) count);` with help of `fix_wire.py`
 - updates in PlatormIO file (`platformio.ini`)
 - other
-    - Due to the overlap of file names on Mac OS when they differ only in letter case, I changed the ambiguous names by adding the prefix `local` at `src/`:
+    - _I am going to revert it - I will add APFS (case-sensitive volume)_ -
+ Due to the overlap of file names on Mac OS when they differ only in letter case, I changed the ambiguous names by adding the prefix `local` at `src/`:
         - update.h -> localUpdate.h
         - wbserver.cpp -> localWebserver.cpp
         - webserver.h -> localWebserver.h
